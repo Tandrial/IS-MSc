@@ -24,15 +24,9 @@ listDiffR = foldr delete
 solutions :: [Int]
 solutions = head [p | p <- perms [0..9],
   let [r, s, t, u, v, w, x, y, z, _] = p
-      a = bNum [r, s, r]
-      b = bNum [t, u, v]
-      c = bNum [w, w, s]
-      d = bNum [t, x, y]
-      e = bNum [s, s, s]
-      f = bNum [z, w, s]
-      g = bNum [w, v, r]
-      h = bNum [z, v, r]
-      i = bNum [t, y, y]
+      [a, b, c] = map bNum [[r, s, r], [t, u, v], [w, w, s]]
+      [d, e, f] = map bNum [[t, x, y], [s, s, s], [z, w, s]]
+      [g, h, i] = map bNum [[w, v, r], [z, v, r], [t, y, y]]
   in y == 0 && a - b == c && d + e == f && g - h == i
             && a - d == g && b + e == h && c - f == i]
 
