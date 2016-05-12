@@ -60,8 +60,8 @@ remdupsL = foldl cmpLast []
 
 remdupsR :: Eq a => [a] -> [a]
 remdupsR = foldr cmpHead []
-  where cmpHead x []       = [x]
-        cmpHead x ys@(y:_) = if (x == y) then ys else x:ys
+  where cmpHead x [] = [x]
+        cmpHead x ys = if x == (head ys) then ys else [x] ++ ys
 
 -- Aufgabe 5.5
 
@@ -81,7 +81,7 @@ Dann gilt: f · foldr g a     = foldr h b
        ==> f . foldr g a $ p = foldr h b p
        ==> f (foldr g a p)   = foldr h b p
 
-Fall(bottom): zu Zeigen: f . foldr g a $ bottom = foldr h b bottom
+Fall(bottom): zu Zeigen: f (foldr g a bottom) = foldr h b bottom
 
   LHS: f (foldr g a bottom)   [foldr ist strikt im 3. Argument]
     <=>f (bottom)             [f ist strikt]
@@ -90,7 +90,7 @@ Fall(bottom): zu Zeigen: f . foldr g a $ bottom = foldr h b bottom
   RHS: foldr h b bottom       [foldr ist strikt im 3. Argument]
     <=>bottom
 
-Fall([]): zu Zeigen: f . foldr g a $ [] = foldr h b []
+Fall([]): zu Zeigen: f (foldr g a []) = foldr h b []
 
   LHS: f (foldr g a [])       [foldr 1. Regel]
     <=>f (a)                  [f     1. Regel]
@@ -99,7 +99,7 @@ Fall([]): zu Zeigen: f . foldr g a $ [] = foldr h b []
   RHS: foldr h b []           [foldr 1. Regel]
     <=>b
 
-Fall(x:xs): zu Zeigen: f . foldr g a $ (x:xs) = foldr h b (x:xs)
+Fall(x:xs): zu Zeigen: f (foldr g a (x:xs)) = foldr h b (x:xs)
   Annahme: Aussage ist korrekt für xs € [a]
 
   LHS: f (foldr g a (x:xs))   [foldr 2. Regel]
