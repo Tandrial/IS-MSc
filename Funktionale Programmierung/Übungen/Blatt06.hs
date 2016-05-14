@@ -10,9 +10,9 @@ type Digit    = Char
 toMatrix :: String -> Grid
 toMatrix s 
   | (len /= sLen * sLen) = error ("Input needs to be of length n³, but has length " ++ show len)
-  | otherwise = splitInto sLen s
+  | otherwise            = splitInto sLen s
   where sLen = sqrtLen s
-        len = length s
+        len  = length s
 
 sqrtLen :: [a] -> Int
 sqrtLen = floor . (sqrt :: Double -> Double) . fromIntegral . length
@@ -41,15 +41,14 @@ test5 = toMatrix "1243341287413569"
 test6 :: Grid -- 1 Fehler in Gruppe
 test6 = toMatrix "1243312525344351"
 
-
 printGrid :: Grid -> IO ()
 printGrid = putStr . buildS
-  where buildS [] = ""
+  where buildS []     = ""
         buildS (x:xs) = x ++ "\n" ++ buildS xs
 
 
 nodups :: Eq a => [a] -> Bool
-nodups [] = True
+nodups []     = True
 nodups (x:xs) = all (/= x) xs && nodups xs
 
 valid :: Grid -> Bool
@@ -59,8 +58,8 @@ valid g = all nodups g          -- Zeilen
 
 -- Transponiert ein  Grid
 cols :: Grid -> Grid
-cols [] = []
-cols [xs] = [[x] | x <- xs]
+cols []     = []
+cols [xs]   = [[x] | x <- xs]
 cols (x:xs) = zipWith (:) x (cols xs)
 
 -- Grid mit [r1, r2, r3, r4] => Grid mit [g1, g2, g3, g4]
@@ -89,5 +88,5 @@ splitInto n xs = as : splitInto n bs
 zipN :: Int -> [Grid] -> Grid
 zipN _ [] = []
 zipN n xs = zip' (take n xs) ++ zipN n (drop n xs)
-  where zip' [] = []
+  where zip' []     = []
         zip' (y:ys) = foldl (zipWith (++)) y ys
