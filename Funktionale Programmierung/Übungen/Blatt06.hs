@@ -17,30 +17,30 @@ toMatrix s
 sqrtLen :: [a] -> Int
 sqrtLen = floor . (sqrt :: Double -> Double) . fromIntegral . length
 
-{- 12
-   21 -}
+--------------------------------------------------------------------------------
+-- VALID TESTS
+--------------------------------------------------------------------------------
 test1 :: Grid
 test1 = toMatrix "1221"
 
-{- 2341
-   4132
-   1423
-   3214 -}
 test2 :: Grid
 test2 = toMatrix "2341413214233214"
 
-
-{- 534678912
-   672195348
-   198342567
-   859761423
-   426853791
-   713924856
-   961537284 
-   287419635
-   345286179 -}
 test3 :: Grid
 test3 = toMatrix "534678912672195348198342567859761423426853791713924856961537284287419635345286179"
+
+--------------------------------------------------------------------------------
+-- INVALID TESTS
+--------------------------------------------------------------------------------
+test4 :: Grid -- 1 Fehler in Zeile
+test4 = toMatrix "1213342521344351"
+
+test5 :: Grid -- 1 Fehler in Spalte
+test5 = toMatrix "1243341287413569"
+
+test6 :: Grid -- 1 Fehler in Gruppe
+test6 = toMatrix "1243312525344351"
+
 
 printGrid :: Grid -> IO ()
 printGrid = putStr . buildS
@@ -53,20 +53,28 @@ nodups [] = True
 nodups (x:xs) = all (/= x) xs && nodups xs
 
 valid :: Grid -> Bool
-valid g = all nodups g          -- keine Duplikate in den Zeilen
-       && all nodups (cols g)   -- keine Duplikate in den Spalten
-       && all nodups (groups g) -- keine Duplikate in den Gruppen
+valid g = all nodups g          -- Zeilen
+       && all nodups (cols g)   -- Spalten
+       && all nodups (groups g) -- Gruppen
 
+-- Transponiert ein  Grid
 cols :: Grid -> Grid
 cols [] = []
 cols [xs] = [[x] | x <- xs]
 cols (x:xs) = zipWith (:) x (cols xs)
 
+-- Grid mit [r1, r2, r3, r4] => Grid mit [g1, g2, g3, g4]
+-- ["abcd",
+--  "efgh",  ==\     ["abef", "cdgh", "ijmn", "klop"]
+--  "ijkl",  ==/
+--  "mnop"]
 groups :: Grid -> Grid
 groups g = zipN len . map (splitInto len) $ g
   where len = sqrtLen g
 
 -- Splittet eine n² lange Zeile in n Teile mit Länge n
+-- ["abcd"] ==> ["ab", "cd"]
+-- ["abcdefghi"] ==> ["abc", "def", "ghi"]
 splitInto :: Int -> Row a -> [Row a]
 splitInto _ [] = []
 splitInto n xs = as : splitInto n bs
@@ -78,7 +86,6 @@ splitInto n xs = as : splitInto n bs
 -- r2 : ["ef", "gh"],  ==\    ["abef", "cdgh", "ijmn", "klop"]
 -- r3 : ["ij", "kl"],  ==/     
 -- r4 : ["mn", "op"]]
--- 34
 zipN :: Int -> [Grid] -> Grid
 zipN _ [] = []
 zipN n xs = zip' (take n xs) ++ zipN n (drop n xs)
