@@ -10,7 +10,7 @@ type Digit    = Char
 toMatrix :: String -> Grid
 toMatrix s 
   | (len /= sLen * sLen) = error ("Input needs to be of length n³, but has length " ++ show len)
-  | otherwise            = splitInto sLen s
+  | otherwise            = splitEach sLen s
   where sLen = sqrtLen s
         len  = length s
 
@@ -68,23 +68,22 @@ cols (x:xs) = zipWith (:) x (cols xs)
 --  "ijkl",  ==/
 --  "mnop"]
 groups :: Grid -> Grid
-groups g = zipN len . map (splitInto len) $ g
+groups g = zipN len . map (splitEach len) $ g
   where len = sqrtLen g
 
 -- Splittet eine n² lange Zeile in n Teile mit Länge n
--- ["abcd"] ==> ["ab", "cd"]
--- ["abcdefghi"] ==> ["abc", "def", "ghi"]
-splitInto :: Int -> Row a -> [Row a]
-splitInto _ [] = []
-splitInto n xs = as : splitInto n bs
+-- ["abcd"]      ==> ["ab", "cd"]
+splitEach :: Int -> Row a -> [[a]]
+splitEach _ [] = []
+splitEach n xs = as : splitEach n bs
   where (as, bs) = splitAt n xs
 
 -- Zippt n² Rows die in n Teile gesplittet wurden 
 -- element weise zu n² Gruppe zusammen 
--- r1 :[["ab", "cd"],
--- r2 : ["ef", "gh"],  ==\    ["abef", "cdgh", "ijmn", "klop"]
--- r3 : ["ij", "kl"],  ==/     
--- r4 : ["mn", "op"]]
+-- [["ab", "cd"],
+--  ["ef", "gh"],  ==\    ["abef", "cdgh", "ijmn", "klop"]
+--  ["ij", "kl"],  ==/     
+--  ["mn", "op"]]
 zipN :: Int -> [Grid] -> Grid
 zipN _ [] = []
 zipN n xs = zip' (take n xs) ++ zipN n (drop n xs)
