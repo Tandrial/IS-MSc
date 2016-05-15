@@ -4,6 +4,8 @@ module MySet (intersect) where
 -- Zur Anwendung des Moduls muss sich die Datei MySet.hs im gleichen
 -- Verzeichnis befinden wie das Skript, das das Modul importiert.
 
+-- Aufgabe 6.1
+
 intersect :: [String] -> [String] -> [String]
 intersect p q = [x | x <- p, y <- q, x == y]
 

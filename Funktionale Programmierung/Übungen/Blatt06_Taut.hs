@@ -45,11 +45,14 @@ show1 (Neg p) = "~" ++ (show1 p)
 show1 (Conj p q) = "(" ++ show1 p ++ " & " ++ show1 q ++ ")"
 show1 (Disj p q) = "(" ++ show1 p ++ " | " ++ show1 q ++ ")"
 
+-- Aufgabe 6.1
+
 -- weniger Klammern aufgrund von Assoziativität und Bindungsstärke
 show2 :: Prop -> String
 show2 (Atom a) = a
 show2 (Neg p@(Atom _)) = "~" ++ show2 p
 show2 (Neg p) = "~(" ++ show2 p ++ ")"
+show2 (Conj p@(Disj _ _) q@(Disj _ _)) = "(" ++ show2 p ++ ") & (" ++ show2 q ++ ")"
 show2 (Conj p@(Disj _ _) q) = "(" ++ show2 p ++ ") & " ++ show2 q
 show2 (Conj p q@(Disj _ _)) = show2 p ++ " & (" ++ show2 q ++ ")"
 show2 (Conj p q) = show2 p ++ " & " ++ show2 q
