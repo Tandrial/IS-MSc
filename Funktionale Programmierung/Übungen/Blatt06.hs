@@ -14,11 +14,15 @@ nodups []     = True
 nodups (x:xs) = all (/= x) xs && nodups xs
 
 valid :: Grid -> Bool
-valid g = all nodups g          -- Zeilen
-       && all nodups (cols g)   -- Spalten
-       && all nodups (groups g) -- Gruppen
+valid = foldl (==) True . map (all nodups) . rmap [id, cols, groups]
+  where rmap fs x = map ($x) fs
 
--- Transponiert ein  Grid
+valid' :: Grid -> Bool
+valid' g = all nodups g          -- Zeilen
+        && all nodups (cols g)   -- Spalten
+        && all nodups (groups g) -- Gruppen
+
+-- Transponiert ein Grid
 cols :: Grid -> Grid
 cols []     = []
 cols [xs]   = [[x] | x <- xs]
@@ -38,7 +42,7 @@ sqrtLen = floor . (sqrt :: Double -> Double) . fromIntegral . length
 
 -- Splittet eine n² lange Zeile in n Teile mit Länge n
 -- ["abcd"]      ==> ["ab", "cd"]
-splitEach :: Int -> Row a -> [[a]]
+splitEach :: Int -> Row a -> [Row a]
 splitEach _ [] = []
 splitEach n xs = as : splitEach n bs
   where (as, bs) = splitAt n xs
