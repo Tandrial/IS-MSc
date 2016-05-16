@@ -69,26 +69,32 @@ toMatrix s
 --------------------------------------------------------------------------------
 -- VALID TESTS                                                                --
 --------------------------------------------------------------------------------
-test1 :: Grid
-test1 = toMatrix "1221"
-
 test2 :: Grid
-test2 = toMatrix "2341413214233214"
+test2 = toMatrix "1221"
 
-test3 :: Grid
-test3 = toMatrix "534678912672195348198342567859761423426853791713924856961537284287419635345286179"
+test4 :: Grid
+test4 = toMatrix "2341413214233214"
+
+test9 :: Grid
+test9 = toMatrix "534678912672195348198342567859761423426853791713924856961537284287419635345286179"
+
+test16 :: Grid
+test16 = toMatrix ("DE20F8536BC9A471BFAC9461708D5E323659EB7AF412D08C78142C0D53EAFB96"
+                ++ "1BC25E389FA07D64E3976A40DCB1852FAD687F193254EC0BF045CDB2E67813A9"
+                ++ "C23AB7DE49056F1884BF1526CAD397E059E130AF876B42CD07D689C421FEBA53"
+                ++ "217BA3850D46C9FE4A8ED29C153F06B79CFD06EBA8273145650341F7BE9C28DA")
 
 --------------------------------------------------------------------------------
 -- INVALID TESTS                                                              --
 --------------------------------------------------------------------------------
-test4 :: Grid -- 1 Fehler in Zeile
-test4 = toMatrix "1213342521344351"
+testZ :: Grid -- 1 Fehler in Zeile
+testZ = toMatrix "1213342521344351"
 
-test5 :: Grid -- 1 Fehler in Spalte
-test5 = toMatrix "1243341287413569"
+testS :: Grid -- 1 Fehler in Spalte
+testS = toMatrix "1243341287413569"
 
-test6 :: Grid -- 1 Fehler in Gruppe
-test6 = toMatrix "1243312525344351"
+testG :: Grid -- 1 Fehler in Gruppe
+testG = toMatrix "1243312525344351"
 
 --------------------------------------------------------------------------------
 -- Pretty Print a Sudoku Grid                                                 --
