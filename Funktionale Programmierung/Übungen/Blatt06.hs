@@ -13,17 +13,17 @@ nodups :: Eq a => [a] -> Bool
 nodups []     = True
 nodups (x:xs) = all (/= x) xs && nodups xs
 
-valid :: Grid -> Bool
-valid = foldl (==) True . map (all nodups) . rmap [id, cols, groups]
+valid :: Eq a => Matrix a -> Bool
+valid = foldl (&&) True . map (all nodups) . rmap [id, cols, groups]
   where rmap fs x = map ($x) fs
 
-valid' :: Grid -> Bool
+valid' :: Eq a => Matrix a -> Bool
 valid' g = all nodups g          -- Zeilen
         && all nodups (cols g)   -- Spalten
         && all nodups (groups g) -- Gruppen
 
 -- Transponiert ein Grid
-cols :: Grid -> Grid
+cols :: Matrix a -> Matrix a
 cols []     = []
 cols [xs]   = [[x] | x <- xs]
 cols (x:xs) = zipWith (:) x (cols xs)
@@ -33,7 +33,7 @@ cols (x:xs) = zipWith (:) x (cols xs)
 --  "efgh",  ==\     ["abef", "cdgh", "ijmn", "klop"]
 --  "ijkl",  ==/
 --  "mnop"]
-groups :: Grid -> Grid
+groups :: Matrix a -> Matrix a
 groups g = zipN len . map (splitEach len) $ g
   where len = sqrtLen g
 
@@ -53,7 +53,7 @@ splitEach n xs = as : splitEach n bs
 --  ["ef", "gh"],  ==\    ["abef", "cdgh", "ijmn", "klop"]
 --  ["ij", "kl"],  ==/
 --  ["mn", "op"]]
-zipN :: Int -> [Grid] -> Grid
+zipN :: Int -> [Matrix a] -> Matrix a
 zipN _ [] = []
 zipN n xs = zip' (take n xs) ++ zipN n (drop n xs)
   where zip' []     = []
@@ -63,8 +63,8 @@ zipN n xs = zip' (take n xs) ++ zipN n (drop n xs)
 --                                                                            --
 --------------------------------------------------------------------------------
 
-toMatrix :: String -> Grid
-toMatrix s
+toGrid :: String -> Grid
+toGrid s
   | len == (sLen * sLen) = splitEach sLen s
   | otherwise            = error ("Input needs to be of length n³, but has length " ++ show len)
   where sLen = sqrtLen s
@@ -73,32 +73,32 @@ toMatrix s
 --------------------------------------------------------------------------------
 -- VALID TESTS                                                                --
 --------------------------------------------------------------------------------
-test2 :: Grid
-test2 = toMatrix "1221"
+t2 :: Grid
+t2 = toGrid "1221"
 
-test4 :: Grid
-test4 = toMatrix "2341413214233214"
+t4 :: Grid
+t4 = toGrid "2341413214233214"
 
-test9 :: Grid
-test9 = toMatrix "534678912672195348198342567859761423426853791713924856961537284287419635345286179"
+t9 :: Grid
+t9 = toGrid "534678912672195348198342567859761423426853791713924856961537284287419635345286179"
 
-test16 :: Grid
-test16 = toMatrix ("DE20F8536BC9A471BFAC9461708D5E323659EB7AF412D08C78142C0D53EAFB96"
-                ++ "1BC25E389FA07D64E3976A40DCB1852FAD687F193254EC0BF045CDB2E67813A9"
-                ++ "C23AB7DE49056F1884BF1526CAD397E059E130AF876B42CD07D689C421FEBA53"
-                ++ "217BA3850D46C9FE4A8ED29C153F06B79CFD06EBA8273145650341F7BE9C28DA")
+t16 :: Grid
+t16 = toGrid ("DE20F8536BC9A471BFAC9461708D5E323659EB7AF412D08C78142C0D53EAFB96"
+           ++ "1BC25E389FA07D64E3976A40DCB1852FAD687F193254EC0BF045CDB2E67813A9"
+           ++ "C23AB7DE49056F1884BF1526CAD397E059E130AF876B42CD07D689C421FEBA53"
+           ++ "217BA3850D46C9FE4A8ED29C153F06B79CFD06EBA8273145650341F7BE9C28DA")
 
 --------------------------------------------------------------------------------
 -- INVALID TESTS                                                              --
 --------------------------------------------------------------------------------
-testZ :: Grid -- 1 Fehler in Zeile
-testZ = toMatrix "1213342521344351"
+tZ :: Grid -- 1 Fehler in Zeile
+tZ = toGrid "1213342521344351"
 
-testS :: Grid -- 1 Fehler in Spalte
-testS = toMatrix "1243341287413569"
+tS :: Grid -- 1 Fehler in Spalte
+tS = toGrid "1243341287413569"
 
-testG :: Grid -- 1 Fehler in Gruppe
-testG = toMatrix "1243312525344351"
+tG :: Grid -- 1 Fehler in Gruppe
+tG = toGrid "1243312525344351"
 
 --------------------------------------------------------------------------------
 -- Pretty Print a Sudoku Grid                                                 --
