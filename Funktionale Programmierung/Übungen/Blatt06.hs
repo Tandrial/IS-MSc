@@ -37,6 +37,10 @@ groups :: Matrix a -> Matrix a
 groups g = zipN len . map (splitEach len) $ g
   where len = sqrtLen g
 
+groups' :: Matrix a -> Matrix a
+groups' g = map concat . concat . map cols . splitEach len $ map (splitEach len) g
+  where len = sqrtLen g
+
 sqrtLen :: [a] -> Int
 sqrtLen = floor . (sqrt :: Double -> Double) . fromIntegral . length
 
