@@ -6,8 +6,8 @@ module MySet (intersect) where
 
 -- Aufgabe 6.1
 
-intersect :: [String] -> [String] -> [String]
+intersect :: Eq a => [a] -> [a] -> [a]
 intersect p q = [x | x <- p, y <- q, x == y]
 
-intersect' :: [String] -> [String] -> [String]
+intersect' :: Eq a => [a] -> [a] -> [a]
 intersect' p q = foldl (\xs y -> if elem y p then y:xs else xs) [] q
