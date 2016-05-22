@@ -58,8 +58,7 @@ splitEach n xs = as : splitEach n bs
 --  ["ij", "kl"],  ==/
 --  ["mn", "op"]]
 zipN :: Int -> [Matrix a] -> Matrix a
-zipN _ [] = []
-zipN n xs = zip' (take n xs) ++ zipN n (drop n xs)
+zipN n = concatMap zip' . splitEach n
   where zip' []     = []
         zip' (y:ys) = foldl (zipWith (++)) y ys
 
