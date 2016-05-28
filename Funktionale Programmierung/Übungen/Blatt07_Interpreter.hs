@@ -165,9 +165,9 @@ evalStmt fs (BC_Block decls stmts)        = foldl (evalStmt) fs' stmts
   where fs' = foldl (\f (BC_Decl x) -> decl x f ) fs decls
 
 evalArithExpr :: [Frame] -> BC_ArithExpr -> Integer
-evalArithExpr  _ (BC_Const val)    = val
-evalArithExpr fs (BC_Var name)     = get name fs
-evalArithExpr fs (BC_Neg expr)     = -(evalArithExpr fs expr)
+evalArithExpr  _ (BC_Const val)  = val
+evalArithExpr fs (BC_Var name)   = get name fs
+evalArithExpr fs (BC_Neg expr)   = -(evalArithExpr fs expr)
 evalArithExpr fs (BC_Add  e1 e2) = evalArithExpr fs e1   +   evalArithExpr fs e2
 evalArithExpr fs (BC_Sub  e1 e2) = evalArithExpr fs e1   -   evalArithExpr fs e2
 evalArithExpr fs (BC_Mult e1 e2) = evalArithExpr fs e1   *   evalArithExpr fs e2
