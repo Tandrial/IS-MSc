@@ -136,7 +136,7 @@ decl var ((Frame curr_f):fs) =  Frame ((var, 0) : curr_f) : fs
 
 -- local variables can shadow variables from "higher" frames
 assign :: String -> Integer -> [Frame] -> [Frame]
-replace var value fs = f1 ++ [Frame (map (replaceVar) f)] ++ after
+assign var value fs = before ++ [Frame (map (replaceVar) f)] ++ after
   where (before, (Frame f):after) = break (\(Frame ys) -> any ((==var) .fst) ys) fs
         replaceVar x = if fst x == var then (var, value)
                                        else x
