@@ -66,7 +66,7 @@ data BC_BoolExpr = BC_T
                  | BC_Or  BC_BoolExpr  BC_BoolExpr
                  | BC_Eq  BC_ArithExpr BC_ArithExpr
                  | BC_Lt  BC_ArithExpr BC_ArithExpr
-                 | BC_Eb  BC_BoolExpr  BC_BoolExpr
+--               | BC_Eb  BC_BoolExpr  BC_BoolExpr
                    deriving Show
 
 data BC_Statement = BC_While  BC_BoolExpr BC_Statement
@@ -153,36 +153,35 @@ run :: BC_Statement -> Integer
 run = get "__result" . evalStmt (decl ("__result") [])
 
 evalStmt :: [Frame] -> BC_Statement -> [Frame]
-evalStmt fs stmt@(BC_While check body)      = if check' then evalStmt fs' stmt
-                                                         else fs
+evalStmt fs stmt@(BC_While check body)    = if check' then evalStmt fs' stmt
+                                                      else fs
   where check' = evalBoolExpr fs check
         fs'    = evalStmt fs body
-evalStmt fs (BC_If check if_b else_b)       = if check' then evalStmt fs if_b
-                                                         else evalStmt fs else_b
+evalStmt fs (BC_If check if_b else_b)     = if check' then evalStmt fs if_b
+                                                      else evalStmt fs else_b
   where check' = evalBoolExpr fs check
-evalStmt fs (BC_Assign (BC_LVar var) value) = assign var (evalArithExpr fs value) fs
-evalStmt fs (BC_Block decls stmts)          = foldl (evalStmt) fs' stmts
+evalStmt fs (BC_Assign (BC_LVar var) val) = assign var (evalArithExpr fs val) fs
+evalStmt fs (BC_Block decls stmts)        = foldl (evalStmt) fs' stmts
   where fs' = foldl (\f (BC_Decl x) -> decl x f ) fs decls
 
 evalArithExpr :: [Frame] -> BC_ArithExpr -> Integer
 evalArithExpr  _ (BC_Const val)    = val
 evalArithExpr fs (BC_Var name)     = get name fs
 evalArithExpr fs (BC_Neg expr)     = -(evalArithExpr fs expr)
-evalArithExpr fs (BC_Add  op1 op2) = evalArithExpr fs op1   +   evalArithExpr fs op2
-evalArithExpr fs (BC_Sub  op1 op2) = evalArithExpr fs op1   -   evalArithExpr fs op2
-evalArithExpr fs (BC_Mult op1 op2) = evalArithExpr fs op1   *   evalArithExpr fs op2
-evalArithExpr fs (BC_Div  op1 op2) = evalArithExpr fs op1 `div` evalArithExpr fs op2
-evalArithExpr fs (BC_Mod  op1 op2) = evalArithExpr fs op1 `mod` evalArithExpr fs op2
+evalArithExpr fs (BC_Add  e1 e2) = evalArithExpr fs e1   +   evalArithExpr fs e2
+evalArithExpr fs (BC_Sub  e1 e2) = evalArithExpr fs e1   -   evalArithExpr fs e2
+evalArithExpr fs (BC_Mult e1 e2) = evalArithExpr fs e1   *   evalArithExpr fs e2
+evalArithExpr fs (BC_Div  e1 e2) = evalArithExpr fs e1 `div` evalArithExpr fs e2
+evalArithExpr fs (BC_Mod  e1 e2) = evalArithExpr fs e1 `mod` evalArithExpr fs e2
 
 evalBoolExpr :: [Frame] -> BC_BoolExpr -> Bool
-evalBoolExpr  _ BC_T             = True
-evalBoolExpr  _ BC_F             = False
-evalBoolExpr  _ (BC_Eb _ _)      = error "no idea???"
-evalBoolExpr fs (BC_Not op)      = not (evalBoolExpr fs op)
-evalBoolExpr fs (BC_And op1 op2) = evalBoolExpr  fs op1 && evalBoolExpr  fs op2
-evalBoolExpr fs (BC_Or  op1 op2) = evalBoolExpr  fs op1 || evalBoolExpr  fs op2
-evalBoolExpr fs (BC_Eq  op1 op2) = evalArithExpr fs op1 == evalArithExpr fs op2
-evalBoolExpr fs (BC_Lt  op1 op2) = evalArithExpr fs op1 <  evalArithExpr fs op2
+evalBoolExpr  _ BC_T           = True
+evalBoolExpr  _ BC_F           = False
+evalBoolExpr fs (BC_Not e)     = not (evalBoolExpr fs e)
+evalBoolExpr fs (BC_And e1 e2) = evalBoolExpr  fs e1 && evalBoolExpr  fs e2
+evalBoolExpr fs (BC_Or  e1 e2) = evalBoolExpr  fs e1 || evalBoolExpr  fs e2
+evalBoolExpr fs (BC_Eq  e1 e2) = evalArithExpr fs e1 == evalArithExpr fs e2
+evalBoolExpr fs (BC_Lt  e1 e2) = evalArithExpr fs e1 <  evalArithExpr fs e2
 
 -- Beispielprogramm
 -- ================
