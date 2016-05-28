@@ -123,7 +123,6 @@ mkExpr expr               = error ("Compile Error:" ++ show expr)
 mkInteger :: String -> Integer
 mkInteger = foldl (\s x -> 10 * s + toInteger (ord x - ord '0')) 0
 
-
 -- Realisierung des Speichermodells
 -- ================================
 
@@ -132,23 +131,19 @@ mkInteger = foldl (\s x -> 10 * s + toInteger (ord x - ord '0')) 0
 data Frame = Frame [(String, Integer)] deriving Show
 
 decl :: String -> [Frame] -> [Frame]
-decl var []              = [Frame [(var, 0)]]
-decl var ((Frame []):xs) = Frame [(var, 0)] : xs
-decl var ((Frame xs):ys) = Frame ((var, 0) : xs) : ys
+decl var []                  = [Frame [(var, 0)]]
+decl var ((Frame curr_f):fs) =  Frame ((var, 0) : curr_f) : fs
 
 assign :: String -> Integer -> [Frame] -> [Frame]
-assign var value = map (assignS var value)
-
-assignS :: String -> Integer -> Frame -> Frame
-assignS var value (Frame vars) = Frame (assignS' vars)
-  where assignS' = foldl (\ys x -> if fst x == var then (var, value) : ys else x:ys) []
+assign var value = map (\(Frame f) -> Frame (map replaceVar f))
+  where replaceVar x = if fst x == var then (var, value)
+                                       else x
 
 get :: String -> [Frame] -> Integer
-get var []     = error (var ++ " doesn't exist!")
-get var (x:xs) = if found then value else get var xs
-  where (found, value)     = getFrom' x
-        getFrom' (Frame f) = foldl cmpEle (False, 0) f
-        cmpEle ys ele      = if fst ele == var then (True, snd ele) else ys
+get var []                  = error (var ++ " doesn't exist!")
+get var ((Frame curr_f):fs) = if null found then get var fs
+                                            else snd . head $ found
+  where found = filter ((==var) . fst) curr_f
 
 -- Realisierung des Interpreters
 -- =============================
@@ -158,39 +153,39 @@ run :: BC_Statement -> Integer
 run = get "__result" . evalStmt (decl ("__result") [])
 
 evalStmt :: [Frame] -> BC_Statement -> [Frame]
-evalStmt fs stmt@(BC_While check body)           = if check' then evalStmt fs_neu stmt
+evalStmt fs stmt@(BC_While check body)           = if check' then evalStmt fs' stmt
                                                              else fs
   where check' = evalBoolExpr fs check
-        fs_neu = evalStmt fs body
+        fs'    = evalStmt fs body
 evalStmt fs (BC_If check if_b else_b)            = if check' then evalStmt fs if_b
                                                              else evalStmt fs else_b
   where check' = evalBoolExpr fs check
 evalStmt fs (BC_Assign (BC_LVar name) value)     = assign name (evalArithExpr fs value) fs
 evalStmt fs (BC_Block [] [])                     = fs
-evalStmt fs (BC_Block [] (x:xs))                 = evalStmt fs_neu (BC_Block [] xs)
-  where fs_neu = evalStmt fs x
-evalStmt fs (BC_Block ((BC_Decl name):xs) stmts) = evalStmt fs_neu (BC_Block xs stmts)
-  where fs_neu = decl name fs
+evalStmt fs (BC_Block [] (x:xs))                 = evalStmt fs' (BC_Block [] xs)
+  where fs' = evalStmt fs x
+evalStmt fs (BC_Block ((BC_Decl name):xs) stmts) = evalStmt fs' (BC_Block xs stmts)
+  where fs' = decl name fs
 
 evalArithExpr :: [Frame] -> BC_ArithExpr -> Integer
 evalArithExpr  _ (BC_Const val)    = val
 evalArithExpr fs (BC_Var name)     = get name fs
 evalArithExpr fs (BC_Neg expr)     = -(evalArithExpr fs expr)
-evalArithExpr fs (BC_Add op1 op2)  = evalArithExpr fs op1 + evalArithExpr fs op2
-evalArithExpr fs (BC_Sub op1 op2)  = evalArithExpr fs op1 - evalArithExpr fs op2
-evalArithExpr fs (BC_Mult op1 op2) = evalArithExpr fs op1 * evalArithExpr fs op2
-evalArithExpr fs (BC_Div op1 op2)  = evalArithExpr fs op1 `div` evalArithExpr fs op2
-evalArithExpr fs (BC_Mod op1 op2)  = evalArithExpr fs op1 `mod` evalArithExpr fs op2
+evalArithExpr fs (BC_Add  op1 op2) = evalArithExpr fs op1   +   evalArithExpr fs op2
+evalArithExpr fs (BC_Sub  op1 op2) = evalArithExpr fs op1   -   evalArithExpr fs op2
+evalArithExpr fs (BC_Mult op1 op2) = evalArithExpr fs op1   *   evalArithExpr fs op2
+evalArithExpr fs (BC_Div  op1 op2) = evalArithExpr fs op1 `div` evalArithExpr fs op2
+evalArithExpr fs (BC_Mod  op1 op2) = evalArithExpr fs op1 `mod` evalArithExpr fs op2
 
 evalBoolExpr :: [Frame] -> BC_BoolExpr -> Bool
 evalBoolExpr  _ BC_T             = True
 evalBoolExpr  _ BC_F             = False
-evalBoolExpr fs (BC_Not expr)    = not (evalBoolExpr fs expr)
-evalBoolExpr fs (BC_And op1 op2) = evalBoolExpr fs op1 && evalBoolExpr fs op2
-evalBoolExpr fs (BC_Or op1 op2)  = evalBoolExpr fs op1 || evalBoolExpr fs op2
-evalBoolExpr fs (BC_Eq op1 op2)  = evalArithExpr fs op1 == evalArithExpr fs op2
-evalBoolExpr fs (BC_Lt op1 op2)  = evalArithExpr fs op1 < evalArithExpr fs op2
 evalBoolExpr  _ (BC_Eb _ _)      = error "no idea???"
+evalBoolExpr fs (BC_Not op)      = not (evalBoolExpr fs op)
+evalBoolExpr fs (BC_And op1 op2) = evalBoolExpr  fs op1 && evalBoolExpr  fs op2
+evalBoolExpr fs (BC_Or  op1 op2) = evalBoolExpr  fs op1 || evalBoolExpr  fs op2
+evalBoolExpr fs (BC_Eq  op1 op2) = evalArithExpr fs op1 == evalArithExpr fs op2
+evalBoolExpr fs (BC_Lt  op1 op2) = evalArithExpr fs op1 <  evalArithExpr fs op2
 
 -- Beispielprogramm
 -- ================
@@ -246,7 +241,6 @@ p_BC = BC_Block
             ),
           BC_Assign (BC_LVar "__result") (BC_Var "z")
          ]
-
 
 -- Auswertung des Statement-Terms
 
