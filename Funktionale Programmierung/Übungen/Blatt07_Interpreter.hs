@@ -153,19 +153,16 @@ run :: BC_Statement -> Integer
 run = get "__result" . evalStmt (decl ("__result") [])
 
 evalStmt :: [Frame] -> BC_Statement -> [Frame]
-evalStmt fs stmt@(BC_While check body)           = if check' then evalStmt fs' stmt
-                                                             else fs
+evalStmt fs stmt@(BC_While check body)      = if check' then evalStmt fs' stmt
+                                                         else fs
   where check' = evalBoolExpr fs check
         fs'    = evalStmt fs body
-evalStmt fs (BC_If check if_b else_b)            = if check' then evalStmt fs if_b
-                                                             else evalStmt fs else_b
+evalStmt fs (BC_If check if_b else_b)       = if check' then evalStmt fs if_b
+                                                         else evalStmt fs else_b
   where check' = evalBoolExpr fs check
-evalStmt fs (BC_Assign (BC_LVar name) value)     = assign name (evalArithExpr fs value) fs
-evalStmt fs (BC_Block [] [])                     = fs
-evalStmt fs (BC_Block [] (x:xs))                 = evalStmt fs' (BC_Block [] xs)
-  where fs' = evalStmt fs x
-evalStmt fs (BC_Block ((BC_Decl name):xs) stmts) = evalStmt fs' (BC_Block xs stmts)
-  where fs' = decl name fs
+evalStmt fs (BC_Assign (BC_LVar var) value) = assign var (evalArithExpr fs value) fs
+evalStmt fs (BC_Block decls stmts)          = foldl (evalStmt) fs' stmts
+  where fs' = foldl (\f (BC_Decl x) -> decl x f ) fs decls
 
 evalArithExpr :: [Frame] -> BC_ArithExpr -> Integer
 evalArithExpr  _ (BC_Const val)    = val
