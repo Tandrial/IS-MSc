@@ -134,8 +134,16 @@ decl :: String -> [Frame] -> [Frame]
 decl var []                  = [Frame [(var, 0)]]
 decl var ((Frame curr_f):fs) =  Frame ((var, 0) : curr_f) : fs
 
+-- local variables can shadow variables from "higher" frames
 assign :: String -> Integer -> [Frame] -> [Frame]
-assign var value = map (\(Frame f) -> Frame (map replaceVar f))
+replace var value fs = f1 ++ [Frame (map (replaceVar) f)] ++ after
+  where (before, (Frame f):after) = break (\(Frame ys) -> any ((==var) .fst) ys) fs
+        replaceVar x = if fst x == var then (var, value)
+                                       else x
+
+-- ignores local variables, assumes there is only ONE variable with that name
+assign' :: String -> Integer -> [Frame] -> [Frame]
+assign' var value = map (\(Frame f) -> Frame (map replaceVar f))
   where replaceVar x = if fst x == var then (var, value)
                                        else x
 
@@ -162,7 +170,7 @@ evalStmt fs (BC_If check if_b else_b)     = if check' then evalStmt fs if_b
   where check' = evalBoolExpr fs check
 evalStmt fs (BC_Assign (BC_LVar var) val) = assign var (evalArithExpr fs val) fs
 evalStmt fs (BC_Block decls stmts)        = foldl (evalStmt) fs' stmts
-  where fs' = foldl (\f (BC_Decl x) -> decl x f ) fs decls
+  where fs' = (foldl (\f (BC_Decl x) -> decl x f ) [] decls) ++ fs
 
 evalArithExpr :: [Frame] -> BC_ArithExpr -> Integer
 evalArithExpr  _ (BC_Const val)  = val
