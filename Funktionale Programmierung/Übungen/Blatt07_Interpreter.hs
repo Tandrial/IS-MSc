@@ -69,10 +69,10 @@ data BC_BoolExpr = BC_T
 --               | BC_Eb  BC_BoolExpr  BC_BoolExpr
                    deriving Show
 
-data BC_Statement = BC_While  BC_BoolExpr BC_Statement
-                  | BC_If     BC_BoolExpr BC_Statement BC_Statement
-                  | BC_Assign BC_LVar     BC_ArithExpr
-                  | BC_Block  [BC_Decl]  [BC_Statement]
+data BC_Statement = BC_While   BC_BoolExpr BC_Statement
+                  | BC_If      BC_BoolExpr BC_Statement BC_Statement
+                  | BC_Assign  BC_LVar     BC_ArithExpr
+                  | BC_Block  [BC_Decl]   [BC_Statement]
                     deriving Show
 
 data BC_Decl = BC_Decl String
@@ -137,7 +137,8 @@ decl var ((Frame curr_f):fs) =  Frame ((var, 0) : curr_f) : fs
 -- local variables can shadow variables from "higher" frames
 assign :: String -> Integer -> [Frame] -> [Frame]
 assign var value fs = before ++ [Frame (map (replaceVar) f)] ++ after
-  where (before, (Frame f):after) = break (\(Frame ys) -> any ((==var) .fst) ys) fs
+  where fs' = if var == "__result" then tail fs else fs
+        (before, (Frame f):after) = break (\(Frame ys) -> any ((==var) . fst) ys) fs'
         replaceVar x = if fst x == var then (var, value)
                                        else x
 
@@ -161,16 +162,16 @@ run :: BC_Statement -> Integer
 run = get "__result" . evalStmt (decl ("__result") [])
 
 evalStmt :: [Frame] -> BC_Statement -> [Frame]
-evalStmt fs stmt@(BC_While check body)    = if check' then evalStmt fs' stmt
-                                                      else fs
-  where check' = evalBoolExpr fs check
-        fs'    = evalStmt fs body
-evalStmt fs (BC_If check if_b else_b)     = if check' then evalStmt fs if_b
-                                                      else evalStmt fs else_b
-  where check' = evalBoolExpr fs check
-evalStmt fs (BC_Assign (BC_LVar var) val) = assign var (evalArithExpr fs val) fs
-evalStmt fs (BC_Block decls stmts)        = foldl (evalStmt) fs' stmts
-  where fs' = (foldl (\f (BC_Decl x) -> decl x f ) [] decls) ++ fs
+evalStmt fs stmt@(BC_While c e)       = if check' then evalStmt fs' stmt
+                                                  else fs
+  where check' = evalBoolExpr fs c
+        fs'    = evalStmt fs e
+evalStmt fs (BC_If c if_b else_b)     = if check' then evalStmt fs if_b
+                                                  else evalStmt fs else_b
+  where check' = evalBoolExpr fs c
+evalStmt fs (BC_Assign (BC_LVar v) e) = assign v (evalArithExpr fs e) fs
+evalStmt fs (BC_Block decls stmts)    = foldl (evalStmt) fs' stmts
+  where fs' = foldl (\f (BC_Decl x) -> decl x f) [] decls ++ fs
 
 evalArithExpr :: [Frame] -> BC_ArithExpr -> Integer
 evalArithExpr  _ (BC_Const val)  = val
