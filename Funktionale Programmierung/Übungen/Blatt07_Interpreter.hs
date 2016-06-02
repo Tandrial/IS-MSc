@@ -66,7 +66,7 @@ data BC_BoolExpr = BC_T
                  | BC_Or  BC_BoolExpr  BC_BoolExpr
                  | BC_Eq  BC_ArithExpr BC_ArithExpr
                  | BC_Lt  BC_ArithExpr BC_ArithExpr
---               | BC_Eb  BC_BoolExpr  BC_BoolExpr
+                 | BC_Eb  BC_BoolExpr  BC_BoolExpr
                    deriving Show
 
 data BC_Statement = BC_While   BC_BoolExpr BC_Statement
@@ -80,6 +80,10 @@ data BC_Decl = BC_Decl String
 
 data BC_LVar = BC_LVar String
                deriving Show
+
+-- Auswertung des Statement-Terms
+result :: Statement -> Integer
+result = run . compile
 
 -- Compiler von Quell- in Zielsprache
 -- ==================================
@@ -107,7 +111,7 @@ mkBoolExpr (Binary ">"   e1 e2) = BC_Lt  (mkExpr e2)     (mkExpr e1)
 mkBoolExpr (Binary "<="  e1 e2) = BC_Not (BC_Lt (mkExpr e2) (mkExpr e1))
 mkBoolExpr (Binary ">="  e1 e2) = BC_Not (BC_Lt (mkExpr e1) (mkExpr e2))
 mkBoolExpr (Binary "!="  e1 e2) = BC_Not (BC_Eq (mkExpr e1) (mkExpr e2))
-mkBoolExpr expr                 = error ("Compile Error:" ++ show expr)
+mkBoolExpr expr                 = error ("Compile Error: " ++ show expr)
 
 mkExpr :: Expression -> BC_ArithExpr
 mkExpr (Const n)          = BC_Const (mkInteger n)
@@ -118,7 +122,7 @@ mkExpr (Binary "-" e1 e2) = BC_Sub  (mkExpr e1) (mkExpr e2)
 mkExpr (Binary "*" e1 e2) = BC_Mult (mkExpr e1) (mkExpr e2)
 mkExpr (Binary "/" e1 e2) = BC_Div  (mkExpr e1) (mkExpr e2)
 mkExpr (Binary "%" e1 e2) = BC_Mod  (mkExpr e1) (mkExpr e2)
-mkExpr expr               = error ("Compile Error:" ++ show expr)
+mkExpr expr               = error ("Compile Error: " ++ show expr)
 
 mkInteger :: String -> Integer
 mkInteger = foldl (\s x -> 10 * s + toInteger (ord x - ord '0')) 0
@@ -134,25 +138,16 @@ decl :: String -> [Frame] -> [Frame]
 decl var []                  = [Frame [(var, 0)]]
 decl var ((Frame curr_f):fs) =  Frame ((var, 0) : curr_f) : fs
 
--- local variables can shadow variables from "higher" frames
 assign :: String -> Integer -> [Frame] -> [Frame]
-assign var value fs = before ++ [Frame (map (replaceVar) f)] ++ after
-  where fs' = if var == "__result" then tail fs else fs
-        (before, (Frame f):after) = break (\(Frame ys) -> any ((==var) . fst) ys) fs'
-        replaceVar x = if fst x == var then (var, value)
-                                       else x
-
--- ignores local variables, assumes there is only ONE variable with that name
-assign' :: String -> Integer -> [Frame] -> [Frame]
-assign' var value = map (\(Frame f) -> Frame (map replaceVar f))
-  where replaceVar x = if fst x == var then (var, value)
-                                       else x
+assign var value fs = fs0 ++ [Frame (map (replaceVar) f)] ++ fs1
+  where (fs0, (Frame f):fs1) = break (\(Frame ys) -> any ((==var) . fst) ys) fs
+        replaceVar x         = if fst x == var then (var, value) else x
 
 get :: String -> [Frame] -> Integer
-get var []                  = error (var ++ " doesn't exist!")
-get var ((Frame curr_f):fs) = if null found then get var fs
-                                            else snd . head $ found
-  where found = filter ((==var) . fst) curr_f
+get var []             = error (var ++ " doesn't exist!")
+get var ((Frame f):fs) = if null found then get var fs
+                                       else snd . head $ found
+  where found = filter ((==var) . fst) f
 
 -- Realisierung des Interpreters
 -- =============================
@@ -162,21 +157,21 @@ run :: BC_Statement -> Integer
 run = get "__result" . evalStmt (decl ("__result") [])
 
 evalStmt :: [Frame] -> BC_Statement -> [Frame]
-evalStmt fs stmt@(BC_While c e)       = if check' then evalStmt fs' stmt
-                                                  else fs
-  where check' = evalBoolExpr fs c
-        fs'    = evalStmt fs e
-evalStmt fs (BC_If c if_b else_b)     = if check' then evalStmt fs if_b
-                                                  else evalStmt fs else_b
-  where check' = evalBoolExpr fs c
+evalStmt fs stmt@(BC_While e s) = if evalBoolExpr fs e then evalStmt fs' stmt
+                                                       else fs
+  where fs' = evalStmt fs s
+
+evalStmt fs (BC_If e s1 s2) = if evalBoolExpr fs e then evalStmt fs s1
+                                                   else evalStmt fs s2
+
 evalStmt fs (BC_Assign (BC_LVar v) e) = assign v (evalArithExpr fs e) fs
-evalStmt fs (BC_Block decls stmts)    = foldl (evalStmt) fs' stmts
-  where fs' = foldl (\f (BC_Decl x) -> decl x f) [] decls ++ fs
+evalStmt fs (BC_Block decls stmts)    = tail $ foldl (evalStmt) fs' stmts
+  where fs' = foldl (\f (BC_Decl v) -> decl v f) [Frame []] decls ++ fs
 
 evalArithExpr :: [Frame] -> BC_ArithExpr -> Integer
 evalArithExpr  _ (BC_Const val)  = val
-evalArithExpr fs (BC_Var name)   = get name fs
-evalArithExpr fs (BC_Neg expr)   = -(evalArithExpr fs expr)
+evalArithExpr fs (BC_Var v)      = get v fs
+evalArithExpr fs (BC_Neg e)      = -(evalArithExpr fs e)
 evalArithExpr fs (BC_Add  e1 e2) = evalArithExpr fs e1   +   evalArithExpr fs e2
 evalArithExpr fs (BC_Sub  e1 e2) = evalArithExpr fs e1   -   evalArithExpr fs e2
 evalArithExpr fs (BC_Mult e1 e2) = evalArithExpr fs e1   *   evalArithExpr fs e2
@@ -189,6 +184,7 @@ evalBoolExpr  _ BC_F           = False
 evalBoolExpr fs (BC_Not e)     = not (evalBoolExpr fs e)
 evalBoolExpr fs (BC_And e1 e2) = evalBoolExpr  fs e1 && evalBoolExpr  fs e2
 evalBoolExpr fs (BC_Or  e1 e2) = evalBoolExpr  fs e1 || evalBoolExpr  fs e2
+evalBoolExpr fs (BC_Eb  e1 e2) = evalBoolExpr  fs e1 == evalBoolExpr  fs e2
 evalBoolExpr fs (BC_Eq  e1 e2) = evalArithExpr fs e1 == evalArithExpr fs e2
 evalBoolExpr fs (BC_Lt  e1 e2) = evalArithExpr fs e1 <  evalArithExpr fs e2
 
@@ -246,8 +242,3 @@ p_BC = BC_Block
             ),
           BC_Assign (BC_LVar "__result") (BC_Var "z")
          ]
-
--- Auswertung des Statement-Terms
-
-result :: Statement -> Integer
-result = run . compile

@@ -1,8 +1,8 @@
 {-# OPTIONS_GHC -Wall -Werror #-}
 
 module Blatt07 where
-import Blatt06
-import Blatt05
+import Blatt06 (Grid, Matrix, Digit, valid, toGrid)
+import Blatt05 (cp)
 import Data.Char
 
 type Choices = [Digit]
