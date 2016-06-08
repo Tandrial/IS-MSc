@@ -7,12 +7,12 @@ import Control.Monad (liftM, ap)
 {-
 -- Aufgabe 8.1
 
-	instance Monad Exc where
-	-- return :: a -> Exc a
-	  return = Return
-	-- (>>=) :: Exc a -> (a -> Exc b) -> Exc b
-	  (Raise e)  >>= q = Raise e
-	  (Return x) >>= q = q x
+  instance Monad Exc where
+  -- return :: a -> Exc a
+    return = Return
+  -- (>>=) :: Exc a -> (a -> Exc b) -> Exc b
+    (Raise e)  >>= q = Raise e
+    (Return x) >>= q = q x
 
   (1) p >>= return = p
 
@@ -53,14 +53,14 @@ import Control.Monad (liftM, ap)
 
   (3) (p >>= q) >>= r = p >>= (\x -> q x >>= r)
 
-  		Fall (p = (Raise p) UND q, r = egal): zu Zeigen: ((Raise p) >>= q) >>= r = (Raise p) >>= (\x -> q x >>= r)
+      Fall (p = (Raise p) UND q, r = egal): zu Zeigen: ((Raise p) >>= q) >>= r = (Raise p) >>= (\x -> q x >>= r)
 
         LHS: ((Raise p) >>= q) >>= r                   | 1. Regel >>=
-        	<=>(Raise p) >>= r                           | 1. Regel >>=
-        	<=>(Raise p)
+          <=>(Raise p) >>= r                           | 1. Regel >>=
+          <=>(Raise p)
 
         RHS: (Raise p) >>= (\x -> q x >>= r)           | 1. Regel >>=
-        	<=>(Raise p)
+          <=>(Raise p)
 
       Fall (p = (Return p) UND q = (Raise q) UND r = egal): zu Zeigen: ((Return p) >>= (Raise q)) >>= r = (Return p) >>= (\x -> (Raise q) x >>= r)
 
@@ -69,18 +69,18 @@ import Control.Monad (liftM, ap)
           <=>(Raise q) p >>= r
 
         RHS: (Return p) >>= (\x -> (Raise q) x >>= r)  | 2. Regel >>=
-        	<=>(\x -> (Raise q) x >>= r) p               | Application
-        	<=>(Raise q) p >>= r
+          <=>(\x -> (Raise q) x >>= r) p               | Application
+          <=>(Raise q) p >>= r
 
       Fall (p = (Return p) UND q = (Return q) UND r = egal): zu Zeigen: ((Return p) >>= (Return q)) >>= r = (Return p) >>= (\x -> (Return q) x >>= r)
 
         LHS: ((Return p) >>= (Return q)) >>= r         | 2. Regel >>=
-        	<=>((Return q) p) >>= r                      | Klammern entfernen
-        	<=>(Return q) p >>= r
+          <=>((Return q) p) >>= r                      | Klammern entfernen
+          <=>(Return q) p >>= r
 
         RHS: (Return p) >>= (\x -> (Return q) x >>= r) | 2. Regel >>=
-        	<=>(\x -> (Return q) x >>= r) p              | Application
-        	<=>(Return q) p >>= r
+          <=>(\x -> (Return q) x >>= r) p              | Application
+          <=>(Return q) p >>= r
 
 -}
 
