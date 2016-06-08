@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wall -Werror #-}
 
 module Blatt07 where
+
 import Blatt06 (Grid, Matrix, Digit, valid, toGrid)
 import Blatt05 (cp)
 import Data.Char
@@ -15,8 +16,8 @@ choices g = map (map choice) g
 expand :: Matrix Choices-> [Grid]
 expand = cp . map cp
 
-solve :: Grid -> [Grid]
-solve = filter (valid) . expand . choices
+solve :: Grid -> Grid
+solve = head . filter (valid) . expand . choices
 
 --------------------------------------------------------------------------------
 -- TESTS EMPTY GRIDS                                                          --
@@ -41,4 +42,3 @@ t4Part = toGrid "1234000000004321"
 
 t9Part :: Grid
 t9Part = toGrid "034600912672195300000000067859761400000000000013924800961500084207419000005280009"
-
