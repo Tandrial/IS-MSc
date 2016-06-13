@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wall -Werror #-}
 module Blatt05 where
 
-import Blatt04
+import Blatt04 (perms)
 import Data.List
 
 -- \\ mit fold
