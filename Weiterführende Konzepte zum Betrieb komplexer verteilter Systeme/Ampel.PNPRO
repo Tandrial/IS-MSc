@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- This project file has been saved by the New GreatSPN Editor, v.100 --><project name="Ampel" version="121">
+  <gspn name="PetriNet" zoom="150">
+    <nodes>
+      <place label-y="-1.5" marking="1" name="A1_Rot" x="9.0" y="4.0"/>
+      <place label-y="-1.5" name="A1_Gelb" x="9.0" y="14.0"/>
+      <place name="A1_Grun" x="9.0" y="24.0"/>
+      <place label-y="-1.5" marking="1" name="A2_Rot" x="29.0" y="4.0"/>
+      <place label-y="-1.5" name="A2_Gelb" x="29.0" y="14.0"/>
+      <place name="A2_Grun" x="29.0" y="24.0"/>
+      <text-box bold="true" border-color="#000000" fill-color="none" height="1.5" name="__textBox0" shadow="true" shape="ROUND_RECTANGLE" text-color="#000000" width="9.5" x="15.25" y="1.25">Ampel Schaltung</text-box>
+      <transition delay="I[5]" delay-x="-2.0" delay-y="1.5" name="A14" rotation="4.71238898038469" type="GEN" x="9.55" y="9.0"/>
+      <transition delay="I[30]" delay-x="-2.0" delay-y="1.5" name="A13" rotation="4.71238898038469" type="GEN" x="9.55" y="19.0"/>
+      <transition name="A11" rotation="4.71238898038469" type="IMM" x="14.85" y="9.0"/>
+      <transition delay="I[2]" delay-x="-2.0" delay-y="1.5" name="A12" rotation="4.71238898038469" type="GEN" x="4.55" y="19.0"/>
+      <transition delay="I[2]" delay-x="-2.0" delay-y="1.5" name="A22" rotation="4.71238898038469" type="GEN" x="34.55" y="19.0"/>
+      <transition delay="I[5]" delay-x="-2.0" delay-y="1.5" name="A24" rotation="4.71238898038469" type="GEN" x="29.55" y="9.0"/>
+      <transition delay="I[30]" delay-x="-2.0" delay-y="1.5" name="A23" rotation="4.71238898038469" type="GEN" x="29.55" y="19.0"/>
+      <transition name="A21" rotation="4.71238898038469" type="IMM" x="24.85" y="9.0"/>
+      <place name="A1_Schaltet" x="19.0" y="4.0"/>
+      <place marking="1" name="A2_schaltet" x="19.0" y="14.0"/>
+    </nodes>
+    <edges>
+      <arc head="A12" kind="INPUT" tail="A1_Rot">
+        <point x="5.0" y="5.0"/>
+      </arc>
+      <arc head="A12" kind="INPUT" tail="A1_Gelb">
+        <point x="5.0" y="15.0"/>
+      </arc>
+      <arc head="A13" kind="INPUT" tail="A1_Grun"/>
+      <arc head="A1_Gelb" kind="OUTPUT" tail="A13"/>
+      <arc head="A1_Grun" kind="OUTPUT" tail="A12">
+        <point x="5.0" y="25.0"/>
+      </arc>
+      <arc head="A14" kind="INPUT" tail="A1_Gelb"/>
+      <arc head="A1_Rot" kind="OUTPUT" tail="A14"/>
+      <arc head="A14" kind="INHIBITOR" tail="A1_Rot"/>
+      <arc head="A11" kind="INPUT" tail="A1_Rot">
+        <point x="15.0" y="5.0"/>
+      </arc>
+      <arc head="A1_Rot" kind="OUTPUT" tail="A11">
+        <point x="15.0" y="5.0"/>
+      </arc>
+      <arc head="A1_Gelb" kind="OUTPUT" tail="A11">
+        <point x="15.0" y="15.0"/>
+      </arc>
+      <arc head="A22" kind="INPUT" tail="A2_Rot">
+        <point x="35.0" y="5.0"/>
+      </arc>
+      <arc head="A22" kind="INPUT" tail="A2_Gelb">
+        <point x="35.0" y="15.0"/>
+      </arc>
+      <arc head="A2_Grun" kind="OUTPUT" tail="A22">
+        <point x="35.0" y="25.0"/>
+      </arc>
+      <arc head="A23" kind="INPUT" tail="A2_Grun"/>
+      <arc head="A2_Gelb" kind="OUTPUT" tail="A23"/>
+      <arc head="A24" kind="INPUT" tail="A2_Gelb"/>
+      <arc head="A2_Rot" kind="OUTPUT" tail="A24"/>
+      <arc head="A24" kind="INHIBITOR" tail="A2_Rot"/>
+      <arc head="A21" kind="INPUT" tail="A2_Rot">
+        <point x="25.0" y="5.0"/>
+      </arc>
+      <arc head="A2_Rot" kind="OUTPUT" tail="A21">
+        <point x="25.0" y="5.0"/>
+      </arc>
+      <arc head="A2_Gelb" kind="OUTPUT" tail="A21">
+        <point x="25.0" y="15.0"/>
+      </arc>
+      <arc head="A2_schaltet" kind="OUTPUT" tail="A14"/>
+      <arc head="A21" kind="INPUT" tail="A2_schaltet"/>
+      <arc head="A11" kind="INPUT" tail="A1_Schaltet"/>
+      <arc head="A1_Schaltet" kind="OUTPUT" tail="A24"/>
+    </edges>
+  </gspn>
+  <measures gspn-name="PetriNet" name="Measures">
+    <assignments/>
+    <greatspn/>
+    <formulas>
+      <formula comment="Basic statistics of the toolchain execution." language="STAT"/>
+      <formula comment="All the basic Petri net measures" language="ALL"/>
+    </formulas>
+  </measures>
+</project>
