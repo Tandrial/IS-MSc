@@ -30,22 +30,23 @@ instance Monad St where
   -- (>>=) :: St a -> (a -> St b) -> St b
   (MkSt p) >>= q = MkSt f
     where f s = apply (q x) s'
-      where (x, s') = p s
+            where (x, s') = p s
 
 apply :: St a -> Map -> (a, Map)
 apply (MkSt f) s = f s
 
 conc :: [String] -> St String
 conc [] = return ""
-conc (x:xs) = do ele  <- return x
-                 _    <- merge x
+conc (x:xs) = do _    <- merge x
                  rest <- conc xs
-                 return (ele ++ rest)
+                 return (x ++ rest)
 
 merge :: String -> St String
 merge x = MkSt(\m -> (x, merge' m))
   where merge' []     = [(x, 1)]
-        merge' (y:ys) = if (x == fst y) then (x, 1 + snd y) : ys else y : merge' ys
+        merge' (y:ys) = if x == fst y
+                          then (x, 1 + snd y) : ys
+                          else y : merge' ys
 
 -- Aufgabe 9.2
 
@@ -66,7 +67,7 @@ parserTerm :: Parser Prop
 parserTerm = do {t <- parserFactor; restTerm t}
 
 restProp :: Prop -> Parser Prop
-restProp t = do {symbol "|"; t' <- parserTerm; restProp (Disj t t')}
+restProp t = do {symbol "|"; t' <- parserTerm;   restProp (Disj t t')}
     `orelse` do return t
 
 restTerm :: Prop -> Parser Prop
@@ -113,8 +114,7 @@ instance Monad St2 where
 
   (1) p >>= return = p
 
-    zu Zeiten:  MkSt2 (f, a) >>= return = MkSt2 (f, a)
-      mit  f :: Int -> Int
+    zu Zeigen:  MkSt2 (f, a) >>= return = MkSt2 (f, a)
 
       LHS: MkSt2 (f, a) >>= return                              | Regel >>=
         <=>MkSt2 (g . f, y) mit MkSt2 (g, y) = return a         | Regel return
@@ -127,7 +127,6 @@ instance Monad St2 where
   (2) return e >>= q = q e
 
     zu Zeigen: return e >>= MkSt2 (f, a) = MkSt2 (f, a) e
-      mit f :: Int -> Int UND :t a == :t e
 
       LHS: return e >>= MKSt2 (f, a)                           | Regel return
         <=>MkSt2 (id, e) >>= MKSt2 (f, a)                      | Regel >>=
