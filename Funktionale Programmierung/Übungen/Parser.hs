@@ -1,4 +1,3 @@
-{-# LANGUAGE NPlusKPatterns #-}
 {-# OPTIONS_GHC -Wall -Werror #-}
 
 module Parser where
@@ -22,13 +21,12 @@ instance Applicative Parser where
   (<*>) = ap
 
 instance Monad Parser where
-
 -- return   :: a -> Parser a
    return x =  MkP (\s -> [(x, s)])
-
 -- (>>=)   :: Parser a -> (a -> Parser b) -> Parser b
    p >>= q =  MkP f
               where f s = [(y, s'') | (x, s') <- apply p s, (y, s'') <- apply (q x) s']
+
 
 -- Grundlegende Parser
 -- ===================
@@ -39,15 +37,11 @@ item =  MkP f
         where f []       = []
               f (c : cs) = [(c, cs)]
 
--- Parser, der immer fehlschlägt
-zero :: Parser a
-zero =  MkP (const [])
-
 -- Liefert erstes Zeichen der Eingabe, wenn es eine bestimmte Bedingung erfüllt.
 sat   :: (Char -> Bool) -> Parser Char
 sat p = do
           c <- item
-          if p c then return c else zero
+          if p c then return c else MkP (const [])
 
 -- Schlägt fehl, wenn Eingabe nicht mit einem bestimmten Zeichen beginnt.
 char   :: Char -> Parser ()
@@ -66,29 +60,9 @@ string (x : xs) =  do
 lower :: Parser Char
 lower =  sat isLower
 
--- Liefert Ziffernwert, wenn nächstes Zeichen der Eingabe eine Ziffer ist.
-digit :: Parser Int
-digit =  do
-           d <- sat isDigit
-           return (ord d - ord '0')
-
-
 
 -- Alternative Parser
 -- ==================
-
--- Vereinigung der Parse-Ergebnisse zweier Parser
-plus :: Parser a -> Parser a -> Parser a
-p `plus` q = MkP f
-             where f s = apply p s ++ apply q s
-
--- Liefert Anfangsfolge aller Kleinbuchstaben.
-lowers :: Parser String
-lowers =  (do
-             c  <- lower
-             cs <- lowers
-             return (c : cs))
-          `plus` (return "")
 
 -- Liefert Parse-Ergebnisse des ersten Parsers, falls dieser nicht fehlschlägt,
 -- sonst Parse-Ergebnisse des zweiten Parsers.
@@ -96,13 +70,6 @@ orelse       :: Parser a -> Parser a -> Parser a
 p `orelse` q =  MkP f
                 where f s = if null ps then apply q s else ps
                             where ps = apply p s
-
-lowers' :: Parser String
-lowers' =  (do
-              c  <- lower
-              cs <- lowers'
-              return (c : cs))
-           `orelse` return ""
 
 
 -- Wiederholung
@@ -116,64 +83,12 @@ many p =  (do
              return (x : xs))
           `orelse` return []
 
--- Es gilt: lowers' = many lower
-
 -- Liefert einen Identifier.
 ident :: Parser String
 ident =  do
            c  <- lower
            cs <- many (sat (\x -> isLower x || isDigit x))
            return (c : cs)
-
--- Wiederholt einen Parser, bis er fehlschlägt, mindestens aber 1 mal.
-some   :: Parser a -> Parser [a]
-some p =  do
-            x  <- p
-            xs <- many p
-            return (x : xs)
-
--- Liefert vorzeichenlose Zahl, mit der Eingabe beginnt.
-nat :: Parser Int
-nat =  do
-         ds <- some digit
-         return (foldl conv 0 ds)
-                 where m `conv` n = 10 * m + n
-
--- Liefert positive oder negative Zahl, mit der Eingabe beginnt.
-int :: Parser Int
-int =  (do
-          char '-'
-          n <- nat
-          return (-n))
-       `orelse` nat
-
-
-
--- Wiederholung mit Trennzeichen
--- =============================
-
--- Liefert Liste von Zahlen, wenn Eingabe mit [n,m,...] beginnt.
-ints :: Parser [Int]
-ints =  do
-          char '['
-          i  <- int
-          is <- many (do {char ','; int})
-          char ']'
-          return (i : is)
-
--- Verallgemeinerung von ints, wobei Trennung durch Sequenz erfolgt,
--- die der Parser skip erkennt.
-somewith        :: Parser b -> Parser a -> Parser [a]
-somewith skip p =  do
-                     x  <- p
-                     xs <- many (do {_ <- skip; p})
-                     return (x : xs)
-
--- wie somewith, aber auch mit 0 Wiederholungen
-manywith        :: Parser b -> Parser a -> Parser [a]
-manywith skip p =  somewith skip p `orelse` return []
-
-
 
 -- White space
 -- ===========
