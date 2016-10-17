@@ -1,0 +1,68 @@
+options {
+  STATIC = false;
+  UNICODE_INPUT = true;
+}
+
+/******************************************************************************/
+/* PARSER CODE                                                                */
+/******************************************************************************/
+PARSER_BEGIN(Parser)
+  package Parser;
+
+  import java.io.*;
+  import RegularExpr.*;
+
+  public class Parser {
+    public static Expression parse(String s) throws ParseException, UnsupportedEncodingException {
+      Reader streamReader = new InputStreamReader(new ByteArrayInputStream(s.getBytes()), "UTF-8");
+      return new Parser(streamReader).parseRegEx();
+    }
+  }
+PARSER_END(Parser)
+
+
+/******************************************************************************/
+/* LEXICAL SPECIFICATION                                                      */
+/******************************************************************************/
+
+TOKEN : {
+          <ITERATION : "*"> | <ALTERNATIVE : "|">
+        | <LPARAN    : "("> | <RPARAN      : ")">
+        | <LITERAL   : ("\u03b5" | ["a"-"z"] | ["A"-"Z"])>
+}
+
+SKIP : { < " " | "\t" |"\n" | "\r"> }
+
+/******************************************************************************/
+/* SYNTACTICAL SPECIFICATION                                                  */
+/******************************************************************************/
+
+// <RegEx> ::= <Term> | <Term> <ALTERNATIVE> <RegEx>
+  Expression parseRegEx() : { Expression t1 = null; Expression t2 = null; }
+    {
+      t1 = parseTerm() ( <ALTERNATIVE> t2 = parseTerm() )?
+      { if (t2 == null)
+          return t1;
+        else
+          return new Alternative(t1,t2);
+      }
+    }
+
+// <Term> ::= ( <Factor> )+
+  Expression parseTerm() : { Expression t1 = null; Expression t2 = null; }
+    {
+      t1 = parseFactor() (t2 = parseFactor() { t1 = new Concat(t1, t2);} )* { return t1; }
+    }
+
+// <Factor> ::= <Base> ( <ITERATION> )*
+  Expression parseFactor() : { Expression t1 = null; Expression t2 = null; }
+    {
+      t1 = parseBase() ( <ITERATION> { t1 = new Iteration(t1); } )*  { return t1; }
+    }
+
+// <Base> ::= <LPARAN> <RegEx> <RPARAN> | <LITERAL>
+  Expression parseBase() : {Token lit = null; Expression t1 = null; }
+    {
+       <LPARAN> t1 = parseRegEx() <RPARAN> { return t1; }
+     | lit = <LITERAL>                     { return new Literal(lit.image.charAt(0)); }
+    }

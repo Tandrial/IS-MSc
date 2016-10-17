@@ -3,14 +3,15 @@ import java.io.IOException;
 import FiniteAutomata.DFA;
 import FiniteAutomata.FiniteAutomata;
 import FiniteAutomata.NFA;
-import Parser.RegExParser;
+import Parser.ParseException;
+import Parser.Parser;
 import RegularExpr.Expression;
 
 public class Blatt02 {
 
-	public static void solve(String expr, String label) throws IOException {
+	public static void solve(String expr, String label) throws IOException, ParseException {
 		System.out.println("[+] Parsing expression");
-		Expression e = RegExParser.parse(expr);
+		Expression e = Parser.parse(expr);
 		if (expr.equals(e.toString())) {
 			System.out.println("[+] Parse succsessfull");
 		} else {
@@ -64,7 +65,7 @@ public class Blatt02 {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ParseException {
 		String label = "Aufgabe_2_4_a";
 		String expr = "((a|ε)b*)*";
 		System.out.println(label + " " + expr);
