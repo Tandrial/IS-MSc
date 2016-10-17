@@ -15,7 +15,10 @@ public class Iteration implements Expression {
 
 	@Override
 	public String toString() {
-		return "(" + t1 + ")*";
+		if (t1 instanceof Literal || t1 instanceof Alternative)
+			return t1 + "*";
+		else
+			return "(" + t1 + ")*";
 	}
 
 	@Override
