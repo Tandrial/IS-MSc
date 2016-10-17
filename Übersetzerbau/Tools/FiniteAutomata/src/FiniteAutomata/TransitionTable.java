@@ -15,7 +15,7 @@ public class TransitionTable {
 		if (table.containsKey(t.getState())) {
 			table.get(t.getState()).addTransition(t);
 		} else {
-			table.put(t.getState(), t);			
+			table.put(t.getState(), t);
 		}
 	}
 

@@ -41,10 +41,9 @@ public class Alternative implements Expression {
 		for (NFA n : new NFA[] { n1, n2 }) {
 			State oldStart = n.getStartState();
 			oldStart.setInitial(false);
-			
+
 			result.addToAlphabet(n.getAlphabet());
 			result.addStates(n.getStates());
-
 
 			result.addTransition(neuStart, NFA.eps, oldStart.asSet());
 

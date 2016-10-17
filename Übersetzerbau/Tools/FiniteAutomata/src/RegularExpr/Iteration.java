@@ -24,7 +24,7 @@ public class Iteration implements Expression {
 		State oldStart = result.getStartState();
 		oldStart.setInitial(false);
 		Set<State> oldFinal = result.getFinalStates();
-			
+
 		State neuStart = new State("neuStart");
 		neuStart.setInitial(true);
 		State neuFinal = new State("neuFinal");

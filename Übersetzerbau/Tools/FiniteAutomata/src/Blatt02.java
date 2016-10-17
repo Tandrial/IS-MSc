@@ -1,7 +1,13 @@
 import java.io.IOException;
 
-import FiniteAutomata.*;
-import RegularExpr.*;
+import FiniteAutomata.DFA;
+import FiniteAutomata.FiniteAutomata;
+import FiniteAutomata.NFA;
+import RegularExpr.Alternative;
+import RegularExpr.Concat;
+import RegularExpr.Expression;
+import RegularExpr.Iteration;
+import RegularExpr.Literal;
 
 public class Blatt02 {
 
