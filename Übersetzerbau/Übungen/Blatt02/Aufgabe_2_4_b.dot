@@ -1,0 +1,92 @@
+digraph fs {
+	rankdir=LR;
+	fontsize=20;
+	label = "Aufgabe 2.4.b : (a|b)*abb(a|b)*";
+
+	subgraph cluster_DFA_minimiert {
+		label = "DFA_minimiert";
+		graph [ dpi = 1200 ];
+		node [shape = doublecircle]
+		{q30 [label="q3"]};
+		secret_node0 [style=invis, fixedsize=true, width=0.2]
+		node [shape = circle];
+		secret_node0 -> {q00 [label="q0"]};
+		{q10 [label="q1"]} -> {q10 [label="q1"]} [label = "a"];
+		{q10 [label="q1"]} -> {q20 [label="q2"]} [label = "b"];
+		{q20 [label="q2"]} -> {q10 [label="q1"]} [label = "a"];
+		{q20 [label="q2"]} -> {q30 [label="q3"]} [label = "b"];
+		{q30 [label="q3"]} -> {q30 [label="q3"]} [label = "a"];
+		{q30 [label="q3"]} -> {q30 [label="q3"]} [label = "b"];
+		{q00 [label="q0"]} -> {q10 [label="q1"]} [label = "a"];
+		{q00 [label="q0"]} -> {q00 [label="q0"]} [label = "b"];
+	}
+
+	subgraph cluster_DFA {
+		label = "DFA";
+		graph [ dpi = 1200 ];
+		node [shape = doublecircle]
+		{q41 [label="q4"]}
+		{q51 [label="q5"]}
+		{q61 [label="q6"]}
+		{q71 [label="q7"]}
+		{q81 [label="q8"]};
+		secret_node1 [style=invis, fixedsize=true, width=0.2]
+		node [shape = circle];
+		secret_node1 -> {q01 [label="q0"]};
+		{q01 [label="q0"]} -> {q11 [label="q1"]} [label = "a"];
+		{q01 [label="q0"]} -> {q21 [label="q2"]} [label = "b"];
+		{q11 [label="q1"]} -> {q11 [label="q1"]} [label = "a"];
+		{q11 [label="q1"]} -> {q31 [label="q3"]} [label = "b"];
+		{q21 [label="q2"]} -> {q11 [label="q1"]} [label = "a"];
+		{q21 [label="q2"]} -> {q21 [label="q2"]} [label = "b"];
+		{q31 [label="q3"]} -> {q11 [label="q1"]} [label = "a"];
+		{q31 [label="q3"]} -> {q41 [label="q4"]} [label = "b"];
+		{q41 [label="q4"]} -> {q51 [label="q5"]} [label = "a"];
+		{q41 [label="q4"]} -> {q61 [label="q6"]} [label = "b"];
+		{q51 [label="q5"]} -> {q51 [label="q5"]} [label = "a"];
+		{q51 [label="q5"]} -> {q71 [label="q7"]} [label = "b"];
+		{q61 [label="q6"]} -> {q51 [label="q5"]} [label = "a"];
+		{q61 [label="q6"]} -> {q61 [label="q6"]} [label = "b"];
+		{q71 [label="q7"]} -> {q51 [label="q5"]} [label = "a"];
+		{q71 [label="q7"]} -> {q81 [label="q8"]} [label = "b"];
+		{q81 [label="q8"]} -> {q51 [label="q5"]} [label = "a"];
+		{q81 [label="q8"]} -> {q61 [label="q6"]} [label = "b"];
+	}
+
+	subgraph cluster_NFA {
+		label = "NFA";
+		graph [ dpi = 1200 ];
+		node [shape = doublecircle]
+		{q212 [label="q21"]};
+		secret_node2 [style=invis, fixedsize=true, width=0.2]
+		node [shape = circle];
+		secret_node2 -> {q002 [label="q00"]};
+		{q192 [label="q19"]} -> {q202 [label="q20"]} [label = "ε"];
+		{q152 [label="q15"]} -> {q162 [label="q16"]} [label = "ε"];
+		{q152 [label="q15"]} -> {q172 [label="q17"]} [label = "ε"];
+		{q202 [label="q20"]} -> {q152 [label="q15"]} [label = "ε"];
+		{q202 [label="q20"]} -> {q212 [label="q21"]} [label = "ε"];
+		{q142 [label="q14"]} -> {q152 [label="q15"]} [label = "ε"];
+		{q142 [label="q14"]} -> {q212 [label="q21"]} [label = "ε"];
+		{q042 [label="q04"]} -> {q072 [label="q07"]} [label = "a"];
+		{q072 [label="q07"]} -> {q092 [label="q09"]} [label = "ε"];
+		{q032 [label="q03"]} -> {q062 [label="q06"]} [label = "b"];
+		{q062 [label="q06"]} -> {q092 [label="q09"]} [label = "ε"];
+		{q012 [label="q01"]} -> {q032 [label="q03"]} [label = "ε"];
+		{q012 [label="q01"]} -> {q042 [label="q04"]} [label = "ε"];
+		{q092 [label="q09"]} -> {q012 [label="q01"]} [label = "ε"];
+		{q092 [label="q09"]} -> {q022 [label="q02"]} [label = "ε"];
+		{q002 [label="q00"]} -> {q012 [label="q01"]} [label = "ε"];
+		{q002 [label="q00"]} -> {q022 [label="q02"]} [label = "ε"];
+		{q022 [label="q02"]} -> {q052 [label="q05"]} [label = "ε"];
+		{q052 [label="q05"]} -> {q082 [label="q08"]} [label = "a"];
+		{q082 [label="q08"]} -> {q102 [label="q10"]} [label = "ε"];
+		{q102 [label="q10"]} -> {q112 [label="q11"]} [label = "b"];
+		{q112 [label="q11"]} -> {q122 [label="q12"]} [label = "ε"];
+		{q122 [label="q12"]} -> {q132 [label="q13"]} [label = "b"];
+		{q132 [label="q13"]} -> {q142 [label="q14"]} [label = "ε"];
+		{q162 [label="q16"]} -> {q182 [label="q18"]} [label = "a"];
+		{q182 [label="q18"]} -> {q202 [label="q20"]} [label = "ε"];
+		{q172 [label="q17"]} -> {q192 [label="q19"]} [label = "b"];
+	}
+}

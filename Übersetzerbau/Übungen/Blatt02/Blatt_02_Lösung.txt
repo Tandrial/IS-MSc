@@ -1,0 +1,163 @@
+Aufgabe 2.1: (Reguläre Audrücke)
+
+  a)Alle Zahlen Binärdarstellung inklusive dem leeren Wort
+
+  b)Alle möglichen Binärdarstellungen der Länge >= 3, wobei das 3. LSB 0 ist
+
+  c)Alle Wörter mit gerade Anzahl von as und bs
+
+Aufgabe 2.2: (Reguläre Definitionen)
+
+  a) (0|11|101)+
+
+  b)
+    <FLOAT> -> <SIGN>(<NUM>(<EXP> | <EXP>?<SUFFIX>)
+                     | (<NUM>'.'<NUM>? | '.'<NUM>) <EXP>?<SUFFIX>?)
+    <NUM> -> [0-9]+
+    <SIGN> -> ε | '+' | '-'
+    <SUFFIX> -> 'f' | 'F'
+    <EXP> -> ('e'|'E')<SIGN><NUM>
+
+  c)
+    <MULTI_LINE_CMNT> -> <START_CMNT><STRING><END_CMNT>
+    <STRING> = '"'<START_CMNT>?<STRING><END_CMNT>?'"' | <APLHANUM>*
+    <ALPHANUM> = [a-z] | [A-Z] | [0-9]
+    <START_CMNT> -> '/''*'
+    <END_CMNT> -> '*''/'
+
+Aufgabe 2.3: (Endliche Automaten)
+
+  a) (aa|bb)*((ab|ba)(aa|bb)*(ab|ba)(aa|bb)*)* [siehe A2.1.a]
+     Startzustand != s_1 ==> Automat akzeptiert alle Wörter mit einer ungerade Anzahl von as und bs
+
+  b)
+    (0|(1(01*0)*1))*
+
+Aufgabe 2.4: (Thompson-Konstruktion) [siehe Aufgabe_2_4.svg]
+
+Aufgabe 2.5: (Alternative Konstruktion des NEA)
+
+  Iterator muss 2 Kriterien erfüllen:
+    i) Der Automat N(s) kann 0-mal durchlaufen werden
+    ii) Der Auomat N(s) muss einen eps-Übergang vom Endzustand in den Anfangszustand haben
+
+  a) korrekt, da i) und ii) erfüllt sind
+  b) korrekt, da i) und ii) erfüllt sind
+  c) korrekt, da i) und ii) erfüllt sind
+
+Aufgabe 2.6: (Teilmengenkonstruktion)
+
+  a) NFA : A_n = ({q1,q2,...,q12}, {a,b}, δ, {q1}, {q12})
+
+     init S_D = eps-closure({q1})        = Q1{q1, q2, q3, q5, q6, q9, q12}
+
+     S_D =  {Q1}
+
+       Q1 x 'a' = {q4}  => eps-closure() = Q2{q2, q3, q4, q5, q7, q8, q9, q11, q12}
+       Q1 x 'b' = {q10} => eps-closure() = Q3{q2, q3, q5, q6, q7, q8, q9, q10, q11, q12}
+
+     S_D = {Q1, Q2, Q3}
+
+       Q2 x 'a' = {q4}                   = Q2
+       Q2 x 'b' = {q10}                  = Q3
+
+       Q3 x 'a' = {q4}                   = Q2
+       Q3 x 'b' = {q10}                  = Q3
+
+    DFA : A_d = ({Q1, Q2, Q3}, {a,b}, δ_D, {Q1}, {Q1, Q2, Q3})
+
+    δ_D = S │ a   b
+         ───┼───────
+         Q1 │ Q2  Q3
+         Q2 │ Q2  Q3
+         Q3 │ Q2  Q3
+
+
+  b) NFA : A_n = ({q1,q2,...,q22}, {a,b}, δ, {q1}, {q22})
+
+     init S_D = eps-closure({q1})                 = Q1{q1, q2, q3, q4, q8, q9}
+
+     S_D =  {Q1}
+
+       Q1 x 'a' = {q5, q10}      => eps-closure() = Q2{q2, q3, q4, q5, q7, q8, q9, q10, q11}
+       Q1 x 'b' = {q6}           => eps-closure() = Q3{q2, q3, q4, q6, q7, q8, q9}
+
+     S_D = {Q1, Q2, Q3}
+
+       Q2 x 'a' = {q5, q10}                       = Q2
+       Q2 x 'b' = {q6, q12}      => eps-closure() = Q4{q2, q3, q4, q6, q7, q8, q9, q12, q13}
+
+       Q3 x 'a' = {q5, q10}                       = Q2
+       Q3 x 'b' = {q6}                            = Q3
+
+     S_D = {Q1, Q2, Q3, Q4}
+
+       Q4 x 'a' = {q5, q10}                       = Q2
+       Q4 x 'b' = {q6, q14}      => eps-closure() = Q5{q2, q3, q4, q6, q7, q9, q15, q16, q17, q18, q22}
+
+     S_D = {Q1, Q2, Q3, Q4, Q5}
+
+       Q5 x 'a' = {q5, q10, q19} => eps-closure() = Q6{q2, q3, q4, q5, q7, q8,  q9, q10, q11, q16, q17, q18, q19, q21, q22}
+       Q5 x 'b' = {q6, q20}      => eps-closure() = Q7{q2, q3, q4, q6, q7, q9, q16, q17, q18, q20, q21, q22}
+
+     S_D = {Q1, Q2, Q3, Q4, Q5, Q6, Q7}
+
+       Q6 x 'a' = {q5, q10, q19}                  = Q6
+       Q6 x 'b' = {q6, q12, q20} => eps-closure() = Q8{q2, q3, q4, q6, q7, q8, q9, q12, q13, q16, q16, q17, q18, q20, q21, q22}
+
+       Q7 x 'a' = {q5, q10, q19}                  = Q6
+       Q7 x 'b' = {q6, q20}                       = Q7
+
+     S_D = {Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8}
+
+       Q8 x 'a' = {q5, q10, q19}                  = Q6
+       Q8 x 'b' = {q6, q14, q20} => eps-closure() = Q9{q2, q3, q4, q6, q7, q8, q9, q15, q16, q17, q18, q21, q22}
+
+     S_D = {Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9}
+
+       Q9 x 'a' = {q5, q10, q19}                  = Q6
+       Q9 x 'b' = {q6, q20}                       = Q7
+
+    DFA : A_D = ({Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9}, {a,b}, δ_D, {Q1}, {Q5, Q6, Q7, Q8, Q9})
+
+      δ_D = S │ a   b
+           ───┼───────
+           Q1 │ Q2  Q3
+           Q2 │ Q2  Q4
+           Q3 │ Q2  Q3
+           Q4 │ Q2  Q5
+           Q5 │ Q6  Q7
+           Q6 │ Q6  Q8
+           Q7 │ Q6  Q7
+           Q8 │ Q6  Q9
+           Q9 │ Q6  Q7
+
+Aufgabe 2.7: (Zustandsminimierung)
+
+  DFA : A = ({Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9}, {a,b}, δ_D, {Q1}, {Q5, Q6, Q7, Q8, Q9})
+
+  S  │ Π_0    a    b │ Π_1    a    b │ Π_2    a    b │ Π_2 => Π_final
+  ───┼───────────────┼───────────────┼───────────────┼───────────────
+  Q1 │  1     1    1 │  1     1    1 │  1     2    1 │  1
+  Q2 │  1     1    1 │  1     1    2 │  2     2    3 │  2
+  Q3 │  1     1    1 │  1     1    1 │  1     2    1 │  1
+  Q4 │  1     1    2 │  2     1    3 │  3     2    4 │  3
+  Q5 │  2     2    2 │  3     3    3 │  4     4    4 │  4
+  Q6 │  2     2    2 │  3     3    3 │  4     4    4 │  4
+  Q7 │  2     2    2 │  3     3    3 │  4     4    4 │  4
+  Q8 │  2     2    2 │  3     3    3 │  4     4    4 │  4
+  Q9 │  2     2    2 │  3     3    3 │  4     4    4 │  4
+
+
+DFA: A_min = (S', {a, b}, δ', s_0', F')
+
+S'   = {Q1, Q2, Q3, Q4}
+s_0' =  Q1
+F'   = {Q4}
+
+δ'   = S │ a   b
+      ───┼───────
+      Q1 │ Q2  Q1
+      Q2 │ Q2  Q3
+      Q3 │ Q2  Q4
+      Q3 │ Q4  Q4
