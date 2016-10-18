@@ -19,10 +19,16 @@ public class Concat implements Expression {
 
   @Override
   public String toString() {
+    String result = "";
     if (t1 instanceof Alternative)
-      return "(" + t1 + ")" + t2;
+      result += "(" + t1.toString() + ")";
     else
-      return t1.toString() + t2.toString();
+      result += t1.toString();
+    if (t2 instanceof Alternative)
+      result += "(" + t2.toString() + ")";
+    else
+      result += t2.toString();
+    return result;
   }
 
   @Override

@@ -16,7 +16,7 @@ public class Iteration implements Expression {
   @Override
   public String toString() {
     if (t1 instanceof Literal)
-      return t1 + "*";
+      return t1.toString() + "*";
     else
       return "(" + t1 + ")*";
   }

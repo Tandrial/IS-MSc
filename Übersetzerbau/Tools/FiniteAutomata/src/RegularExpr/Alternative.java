@@ -19,10 +19,7 @@ public class Alternative implements Expression {
 
   @Override
   public String toString() {
-    if (t2 instanceof Literal || t2 instanceof Iteration || t2 instanceof Concat)
-      return t1 + "|" + t2;
-    else
-      return "(" + t1 + "|" + t2 + ")";
+    return t1.toString() + "|" + t2.toString();
   }
 
   @Override
