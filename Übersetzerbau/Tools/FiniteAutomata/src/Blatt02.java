@@ -11,16 +11,16 @@ public class Blatt02 {
 
   public static void solve(String expr, String label) throws IOException, ParseException {
     System.out.println("[+] Parsing expression");
+    System.out.println("    in  = " + expr);
     Expression e = Parser.parse(expr);
     if (expr.equals(e.toString())) {
       System.out.println("[+] Parse succsessfull");
+      System.out.println("  P(in) = " + e.toString());
     } else {
       System.out.println("[+] Parse failed");
-      System.out.println("\t expr = " + expr);
-      System.out.println("\t e    = " + e.toString());
+      System.out.println("\t P(in) = " + e.toString());
       return;
     }
-    System.out.println("\t" + e);
     System.out.println("[+] Building NFA");
     NFA nfa = e.toNFA(true);
     System.out.println("[+] NFA done");
@@ -63,24 +63,17 @@ public class Blatt02 {
       Runtime.getRuntime().exec(dotLocation + String.format(" %1$s.dot -Tpng -o %1$s.png", label));
       System.out.println("[+] Done\n");
     }
+    System.out.println("+------------------------------------------------------------------------------+");
+    System.out.println("|##############################################################################|");
+    System.out.println("|##############################################################################|");
+    System.out.println("|##############################################################################|");
+    System.out.println("+------------------------------------------------------------------------------+");
   }
 
   public static void main(String[] args) throws IOException, ParseException {
-    String label = "Aufgabe_2_4_a";
-    String expr = "((a|ε)b*)*";
-    System.out.println(label + " " + expr);
-
-    solve(expr, label);
-
-    System.out.println("+------------------------------------------------------------------------------+");
-    System.out.println("|                                                                              |");
-    System.out.println("|                                                                              |");
-    System.out.println("+------------------------------------------------------------------------------+\n");
-
-    label = "Aufgabe_2_4_b";
-    expr = "(a|b)*abb(a|b)*";
-    System.out.println(label + " " + expr);
-
-    solve(expr, label);
+    solve("(a|b)*", "Aufgabe_2_4_a_");
+    solve("((a|ε)b*)*", "Aufgabe_2_4_b_");
+    solve("(a|b)*abb(a|b)*", "Aufgabe_2_4_c_");
+    solve("(a|b)*a(a|b)(a|b)", "Aufgabe_2_4_d_");
   }
 }

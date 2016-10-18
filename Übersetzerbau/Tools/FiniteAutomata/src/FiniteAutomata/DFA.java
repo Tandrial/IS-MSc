@@ -81,7 +81,8 @@ public class DFA extends FiniteAutomata {
             if (allGoals.size() == 0) {
               allGoals.add(goal);
             } else if (!allGoals.contains(goal)) {
-              logger.append("\t\tSplitting " + gruppe);
+              if (!groupNeedstoBeSplit)
+                logger.append("\t\tSplitting " + gruppe);
               groupNeedstoBeSplit = true;
 
               neu.add(s);
@@ -91,7 +92,7 @@ public class DFA extends FiniteAutomata {
         }
 
         if (groupNeedstoBeSplit) {
-          logger.append(" into " + alt + " and " + neu + "\n\n");
+          logger.append(" into " + alt + " and " + neu + "\n");
           groupWasSplit = true;
           gruppenNeu.add(alt);
           gruppenNeu.add(neu);
@@ -99,6 +100,7 @@ public class DFA extends FiniteAutomata {
           gruppenNeu.add(alt);
         }
       }
+      logger.append('\n');
       gruppen = gruppenNeu;
 
     } while (groupWasSplit);
