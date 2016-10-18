@@ -1,9 +1,7 @@
 package FiniteAutomata;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -45,16 +43,8 @@ public class Transition {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    List<String> list = new ArrayList<>();
     for (Entry<Character, Set<State>> move : moves.entrySet())
-      list.add(state + " x '" + move.getKey() + "' → " + Arrays.toString(move.getValue().toArray()));
-
-    for (int i = 0; i < list.size(); i++) {
-      sb.append(list.get(i));
-      if (i < list.size() - 1)
-        sb.append(", ");
-
-    }
-    return sb.toString();
+      sb.append(String.format("[%s] x '%c' → %s\t", state, move.getKey(), Arrays.toString(move.getValue().toArray())));    
+    return sb.toString().trim();
   }
 }

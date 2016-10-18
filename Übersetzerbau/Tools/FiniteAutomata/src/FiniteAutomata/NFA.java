@@ -3,6 +3,7 @@ package FiniteAutomata;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class NFA extends FiniteAutomata {
@@ -63,7 +64,7 @@ public class NFA extends FiniteAutomata {
     while (!queue.isEmpty()) {
       // markiere T;
       State currentState = queue.remove();
-      logger.append("[*] Checking " + currentState);
+      logger.append("[*] Checking [" + currentState + "]\n");
 
       // for (jedes Eingabesymbol a ∈ Σ) {
       for (char c : dfa.alphabet) {
@@ -71,19 +72,16 @@ public class NFA extends FiniteAutomata {
         Set<State> T = new HashSet<>();
         for (State s : currentState.getIncludedStates())
           T.addAll(move(s.asSet(), c));
-        logger.append(String.format("%n\tT:= move(%s, '%c') = %s", currentState, c, T));
+        logger.append(String.format("\tT:= move([%s], '%c') = %s", currentState, c, T));
 
         // U := ε-closure(T);
         Set<State> closureResult = epsilonClosure(T);
         State U = S_D.getStateByName(State.getMergedName(closureResult));
         if (U == null)
           U = State.mergeStates(closureResult);
-        logger.append(String.format(" => epsilon-closure(T) = %s", State.getMergedName(closureResult)));
+        logger.append(String.format(" => epsilon-closure(T) = [%s]%n", State.getMergedName(closureResult)));
         // δD(T, a) := U;
-        Transition t = new Transition(currentState, c, U.asSet());
-        logger.append(String.format("%n\t%s%n", t));
-
-        dfa.lambda.addTransition(t);
+        dfa.lambda.addTransition(new Transition(currentState, c, U.asSet()));
 
         // if (U ∉ SD) {
         if (!S_D.contains(U)) {

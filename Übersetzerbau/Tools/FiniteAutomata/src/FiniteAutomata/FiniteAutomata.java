@@ -125,9 +125,9 @@ public abstract class FiniteAutomata {
 
       // List with all endStates
       sb.append("\t\tnode [shape = doublecircle]");
-      for (State s : fa.states.getFinalStates()) {
+      for (State s : fa.states.getFinalStates())
         sb.append(String.format("%n\t\t{%1$s%2$d [label=\"%1$s\"]}", s, i));
-      }
+
       sb.append(";\n");
       // hidden node to get an arrow to point to the Start-Node
       sb.append("\t\tsecret_node" + i + " [style=invis, fixedsize=true, width=0.2]\n");
@@ -179,6 +179,7 @@ public abstract class FiniteAutomata {
 
     sb.append("δ = [");
     sb.append(this.lambda);
+    sb.delete(sb.length() - 6, sb.length());
     sb.append("]\n");
 
     sb.append("s0 = ");

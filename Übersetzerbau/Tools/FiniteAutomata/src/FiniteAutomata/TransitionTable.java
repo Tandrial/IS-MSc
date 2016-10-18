@@ -11,7 +11,7 @@ public class TransitionTable {
 
   private Map<State, Transition> table = new HashMap<>();
 
-  public void addTransition(Transition t) {
+  protected void addTransition(Transition t) {
     if (table.containsKey(t.getState())) {
       table.get(t.getState()).addTransition(t);
     } else {
@@ -19,7 +19,7 @@ public class TransitionTable {
     }
   }
 
-  public Map<Character, Set<State>> getPossibleTransitions(State state) {
+  protected Map<Character, Set<State>> getPossibleTransitions(State state) {
     if (table.containsKey(state))
       return table.get(state).moves;
     else
@@ -35,10 +35,8 @@ public class TransitionTable {
     StringBuilder sb = new StringBuilder();
     List<State> states = new ArrayList<>(table.keySet());
     Collections.sort(states, (s1, s2) -> s1.getName().compareTo(s2.getName()));
-    for (int i = 0; i < states.size(); i++) {
-      sb.append(table.get(states.get(i)));
-      if (i < states.size() - 1)
-        sb.append(",\n     ");
+    for (State s : states) {
+      sb.append(table.get(s) + "\n     ");
     }
     return sb.toString();
   }

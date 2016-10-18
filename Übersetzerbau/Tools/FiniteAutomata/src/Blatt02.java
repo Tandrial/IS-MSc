@@ -10,11 +10,16 @@ import RegularExpr.Expression;
 public class Blatt02 {
 
   public static void solve(String expr, String label) throws IOException, ParseException {
+    System.out.println("+------------------------------------------------------------------------------+");
+    System.out.println("|##############################################################################|");
+    System.out.println("|##############################################################################|");
+    System.out.println("|##############################################################################|");
+    System.out.println("+------------------------------------------------------------------------------+\n");
     System.out.println("[+] Parsing expression");
     System.out.println("    in  = " + expr);
     Expression e = Parser.parse(expr);
     if (expr.equals(e.toString())) {
-      System.out.println("[+] Parse succsessfull");
+      System.out.println("[+] Parse successful");
       System.out.println("  P(in) = " + e.toString());
     } else {
       System.out.println("[+] Parse failed");
@@ -63,11 +68,6 @@ public class Blatt02 {
       Runtime.getRuntime().exec(dotLocation + String.format(" %1$s.dot -Tpng -o %1$s.png", label));
       System.out.println("[+] Done\n");
     }
-    System.out.println("+------------------------------------------------------------------------------+");
-    System.out.println("|##############################################################################|");
-    System.out.println("|##############################################################################|");
-    System.out.println("|##############################################################################|");
-    System.out.println("+------------------------------------------------------------------------------+");
   }
 
   public static void main(String[] args) throws IOException, ParseException {
