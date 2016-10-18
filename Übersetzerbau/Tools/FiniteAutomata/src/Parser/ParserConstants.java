@@ -7,23 +7,23 @@ package Parser;
  */
 public interface ParserConstants {
 
-	/** End of File. */
-	int EOF = 0;
-	/** RegularExpression Id. */
-	int ITERATION = 1;
-	/** RegularExpression Id. */
-	int ALTERNATIVE = 2;
-	/** RegularExpression Id. */
-	int LPARAN = 3;
-	/** RegularExpression Id. */
-	int RPARAN = 4;
-	/** RegularExpression Id. */
-	int LITERAL = 5;
+  /** End of File. */
+  int      EOF         = 0;
+  /** RegularExpression Id. */
+  int      ITERATION   = 1;
+  /** RegularExpression Id. */
+  int      ALTERNATIVE = 2;
+  /** RegularExpression Id. */
+  int      LPARAN      = 3;
+  /** RegularExpression Id. */
+  int      RPARAN      = 4;
+  /** RegularExpression Id. */
+  int      LITERAL     = 5;
 
-	/** Lexical state. */
-	int DEFAULT = 0;
+  /** Lexical state. */
+  int      DEFAULT     = 0;
 
-	/** Literal token values. */
-	String[] tokenImage = { "<EOF>", "\"*\"", "\"|\"", "\"(\"", "\")\"", "<LITERAL>", "<token of kind 6>", };
+  /** Literal token values. */
+  String[] tokenImage  = { "<EOF>", "\"*\"", "\"|\"", "\"(\"", "\")\"", "<LITERAL>", "<token of kind 6>", };
 
 }
