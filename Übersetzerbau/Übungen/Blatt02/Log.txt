@@ -1,102 +1,68 @@
-Aufgabe_2_4_a ((a|ε)b*)*
 [+] Parsing expression
+       in  = (a|b)*
 [+] Parse succsessfull
-     ((a|ε)b*)*
+     P(in) = (a|b)*
 [+] Building NFA
-[*] Alternative with L( (a|ε) ):
+[*] Alternative with L( a|b ):
 NFA = (S, Σ, δ, s0, F)
 S = [q0, q1, q2, q3, q4, q5]
-Σ = [a, ε]
+Σ = [a, b, ε]
 δ = [q0 x 'ε' → [q1, q2],
-     q1 x 'ε' → [q3],
+     q1 x 'b' → [q3],
      q2 x 'a' → [q4],
      q3 x 'ε' → [q5],
      q4 x 'ε' → [q5]]
 s0 = q0
 F = [q5]
 
-[*] Iteration with L( b* ):
+[*] Iteration with L( (a|b)* ):
 NFA = (S, Σ, δ, s0, F)
-S = [q0, q1, q2, q3]
-Σ = [b, ε]
-δ = [q0 x 'ε' → [q1, q3],
-     q1 x 'b' → [q2],
-     q2 x 'ε' → [q1, q3]]
+S = [q0, q1, q2, q3, q4, q5, q6, q7]
+Σ = [a, b, ε]
+δ = [q0 x 'ε' → [q1, q7],
+     q1 x 'ε' → [q2, q3],
+     q2 x 'b' → [q4],
+     q3 x 'a' → [q5],
+     q4 x 'ε' → [q6],
+     q5 x 'ε' → [q6],
+     q6 x 'ε' → [q1, q7]]
 s0 = q0
-F = [q3]
-
-[*] Concat with L( (a|ε)b* ):
-NFA = (S, Σ, δ, s0, F)
-S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09]
-Σ = [a, b, ε]
-δ = [q00 x 'ε' → [q01, q02],
-     q01 x 'ε' → [q03],
-     q02 x 'a' → [q04],
-     q03 x 'ε' → [q05],
-     q04 x 'ε' → [q05],
-     q05 x 'ε' → [q06],
-     q06 x 'ε' → [q07, q09],
-     q07 x 'b' → [q08],
-     q08 x 'ε' → [q07, q09]]
-s0 = q00
-F = [q09]
-
-[*] Iteration with L( ((a|ε)b*)* ):
-NFA = (S, Σ, δ, s0, F)
-S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11]
-Σ = [a, b, ε]
-δ = [q00 x 'ε' → [q01, q11],
-     q01 x 'ε' → [q02, q03],
-     q02 x 'ε' → [q04],
-     q03 x 'a' → [q05],
-     q04 x 'ε' → [q06],
-     q05 x 'ε' → [q06],
-     q06 x 'ε' → [q07],
-     q07 x 'ε' → [q08, q09],
-     q08 x 'b' → [q10],
-     q09 x 'ε' → [q01, q11],
-     q10 x 'ε' → [q08, q09]]
-s0 = q00
-F = [q11]
+F = [q7]
 
 [+] NFA done
 NFA = (S, Σ, δ, s0, F)
-S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11]
+S = [q0, q1, q2, q3, q4, q5, q6, q7]
 Σ = [a, b, ε]
-δ = [q00 x 'ε' → [q01, q11],
-     q01 x 'ε' → [q02, q03],
-     q02 x 'ε' → [q04],
-     q03 x 'a' → [q05],
-     q04 x 'ε' → [q06],
-     q05 x 'ε' → [q06],
-     q06 x 'ε' → [q07],
-     q07 x 'ε' → [q08, q09],
-     q08 x 'b' → [q10],
-     q09 x 'ε' → [q01, q11],
-     q10 x 'ε' → [q08, q09]]
-s0 = q00
-F = [q11]
+δ = [q0 x 'ε' → [q1, q7],
+     q1 x 'ε' → [q2, q3],
+     q2 x 'b' → [q4],
+     q3 x 'a' → [q5],
+     q4 x 'ε' → [q6],
+     q5 x 'ε' → [q6],
+     q6 x 'ε' → [q1, q7]]
+s0 = q0
+F = [q7]
 
 [+] Converting to DFA
-[*] Initial S_D = [q02q04q01q06q08q07q09q00q11q03]
-[*] Checking q02q04q01q06q08q07q09q00q11q03
-     T:= move(q02q04q01q06q08q07q09q00q11q03, 'a') = [q05] => epsilon-closure(T) = q05q02q04q01q06q08q07q09q11q03
-     q02q04q01q06q08q07q09q00q11q03 x 'a' → [q05q02q04q01q06q08q07q09q11q03]
+[*] Initial S_D = [q2q1q0q7q3]
+[*] Checking q2q1q0q7q3
+     T:= move(q2q1q0q7q3, 'a') = [q5] => epsilon-closure(T) = q5q2q1q6q7q3
+     q2q1q0q7q3 x 'a' → [q5q2q1q6q7q3]
 
-     T:= move(q02q04q01q06q08q07q09q00q11q03, 'b') = [q10] => epsilon-closure(T) = q02q04q01q06q08q10q07q09q11q03
-     q02q04q01q06q08q07q09q00q11q03 x 'b' → [q02q04q01q06q08q10q07q09q11q03]
-[*] Checking q05q02q04q01q06q08q07q09q11q03
-     T:= move(q05q02q04q01q06q08q07q09q11q03, 'a') = [q05] => epsilon-closure(T) = q05q02q04q01q06q08q07q09q11q03
-     q05q02q04q01q06q08q07q09q11q03 x 'a' → [q05q02q04q01q06q08q07q09q11q03]
+     T:= move(q2q1q0q7q3, 'b') = [q4] => epsilon-closure(T) = q2q4q1q6q7q3
+     q2q1q0q7q3 x 'b' → [q2q4q1q6q7q3]
+[*] Checking q5q2q1q6q7q3
+     T:= move(q5q2q1q6q7q3, 'a') = [q5] => epsilon-closure(T) = q5q2q1q6q7q3
+     q5q2q1q6q7q3 x 'a' → [q5q2q1q6q7q3]
 
-     T:= move(q05q02q04q01q06q08q07q09q11q03, 'b') = [q10] => epsilon-closure(T) = q02q04q01q06q08q10q07q09q11q03
-     q05q02q04q01q06q08q07q09q11q03 x 'b' → [q02q04q01q06q08q10q07q09q11q03]
-[*] Checking q02q04q01q06q08q10q07q09q11q03
-     T:= move(q02q04q01q06q08q10q07q09q11q03, 'a') = [q05] => epsilon-closure(T) = q05q02q04q01q06q08q07q09q11q03
-     q02q04q01q06q08q10q07q09q11q03 x 'a' → [q05q02q04q01q06q08q07q09q11q03]
+     T:= move(q5q2q1q6q7q3, 'b') = [q4] => epsilon-closure(T) = q2q4q1q6q7q3
+     q5q2q1q6q7q3 x 'b' → [q2q4q1q6q7q3]
+[*] Checking q2q4q1q6q7q3
+     T:= move(q2q4q1q6q7q3, 'a') = [q5] => epsilon-closure(T) = q5q2q1q6q7q3
+     q2q4q1q6q7q3 x 'a' → [q5q2q1q6q7q3]
 
-     T:= move(q02q04q01q06q08q10q07q09q11q03, 'b') = [q10] => epsilon-closure(T) = q02q04q01q06q08q10q07q09q11q03
-     q02q04q01q06q08q10q07q09q11q03 x 'b' → [q02q04q01q06q08q10q07q09q11q03]
+     T:= move(q2q4q1q6q7q3, 'b') = [q4] => epsilon-closure(T) = q2q4q1q6q7q3
+     q2q4q1q6q7q3 x 'b' → [q2q4q1q6q7q3]
 [*] States and Lambda done
 [*] Renaming States
 [*] Done
@@ -132,96 +98,154 @@ F = [q0]
 [+] Done
 
 +------------------------------------------------------------------------------+
-|                                                                              |
-|                                                                              |
+|##############################################################################|
+|##############################################################################|
+|##############################################################################|
 +------------------------------------------------------------------------------+
-
-Aufgabe_2_4_b (a|b)*abb(a|b)*
 [+] Parsing expression
+       in  = ((a|ε)b*)*
 [+] Parse succsessfull
-     (a|b)*abb(a|b)*
+     P(in) = ((a|ε)b*)*
 [+] Building NFA
-[*] Alternative with L( (a|b) ):
+[*] Alternative with L( a|ε ):
 NFA = (S, Σ, δ, s0, F)
 S = [q0, q1, q2, q3, q4, q5]
-Σ = [a, b, ε]
+Σ = [a, ε]
 δ = [q0 x 'ε' → [q1, q2],
-     q1 x 'b' → [q3],
-     q2 x 'a' → [q4],
+     q1 x 'a' → [q3],
+     q2 x 'ε' → [q4],
      q3 x 'ε' → [q5],
      q4 x 'ε' → [q5]]
 s0 = q0
 F = [q5]
 
-[*] Iteration with L( (a|b)* ):
+[*] Iteration with L( b* ):
 NFA = (S, Σ, δ, s0, F)
-S = [q0, q1, q2, q3, q4, q5, q6, q7]
-Σ = [a, b, ε]
-δ = [q0 x 'ε' → [q1, q7],
-     q1 x 'ε' → [q2, q3],
-     q2 x 'b' → [q4],
-     q3 x 'a' → [q5],
-     q4 x 'ε' → [q6],
-     q5 x 'ε' → [q6],
-     q6 x 'ε' → [q1, q7]]
+S = [q0, q1, q2, q3]
+Σ = [b, ε]
+δ = [q0 x 'ε' → [q1, q3],
+     q1 x 'b' → [q2],
+     q2 x 'ε' → [q1, q3]]
 s0 = q0
-F = [q7]
+F = [q3]
 
-[*] Concat with L( (a|b)*a ):
+[*] Concat with L( (a|ε)b* ):
 NFA = (S, Σ, δ, s0, F)
 S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09]
 Σ = [a, b, ε]
 δ = [q00 x 'ε' → [q01, q02],
-     q01 x 'ε' → [q03, q04],
-     q02 x 'ε' → [q05],
-     q03 x 'b' → [q06],
-     q04 x 'a' → [q07],
-     q05 x 'a' → [q09],
-     q06 x 'ε' → [q08],
-     q07 x 'ε' → [q08],
-     q08 x 'ε' → [q01, q02]]
+     q01 x 'a' → [q03],
+     q02 x 'ε' → [q04],
+     q03 x 'ε' → [q05],
+     q04 x 'ε' → [q05],
+     q05 x 'ε' → [q06],
+     q06 x 'ε' → [q07, q09],
+     q07 x 'b' → [q08],
+     q08 x 'ε' → [q07, q09]]
 s0 = q00
 F = [q09]
 
-[*] Concat with L( (a|b)*ab ):
+[*] Iteration with L( ((a|ε)b*)* ):
 NFA = (S, Σ, δ, s0, F)
 S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11]
 Σ = [a, b, ε]
-δ = [q00 x 'ε' → [q01, q02],
-     q01 x 'ε' → [q03, q04],
-     q02 x 'ε' → [q05],
-     q03 x 'b' → [q06],
-     q04 x 'a' → [q07],
-     q05 x 'a' → [q08],
-     q06 x 'ε' → [q09],
-     q07 x 'ε' → [q09],
-     q08 x 'ε' → [q10],
-     q09 x 'ε' → [q01, q02],
-     q10 x 'b' → [q11]]
+δ = [q00 x 'ε' → [q11, q01],
+     q01 x 'ε' → [q02, q03],
+     q02 x 'a' → [q04],
+     q03 x 'ε' → [q05],
+     q04 x 'ε' → [q06],
+     q05 x 'ε' → [q06],
+     q06 x 'ε' → [q07],
+     q07 x 'ε' → [q08, q09],
+     q08 x 'b' → [q10],
+     q09 x 'ε' → [q11, q01],
+     q10 x 'ε' → [q08, q09]]
 s0 = q00
 F = [q11]
 
-[*] Concat with L( (a|b)*abb ):
+[+] NFA done
 NFA = (S, Σ, δ, s0, F)
-S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, q12, q13]
+S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11]
 Σ = [a, b, ε]
-δ = [q00 x 'ε' → [q01, q02],
-     q01 x 'ε' → [q03, q04],
-     q02 x 'ε' → [q05],
-     q03 x 'b' → [q06],
-     q04 x 'a' → [q07],
-     q05 x 'a' → [q08],
-     q06 x 'ε' → [q09],
-     q07 x 'ε' → [q09],
-     q08 x 'ε' → [q10],
-     q09 x 'ε' → [q01, q02],
-     q10 x 'b' → [q11],
-     q11 x 'ε' → [q12],
-     q12 x 'b' → [q13]]
+δ = [q00 x 'ε' → [q11, q01],
+     q01 x 'ε' → [q02, q03],
+     q02 x 'a' → [q04],
+     q03 x 'ε' → [q05],
+     q04 x 'ε' → [q06],
+     q05 x 'ε' → [q06],
+     q06 x 'ε' → [q07],
+     q07 x 'ε' → [q08, q09],
+     q08 x 'b' → [q10],
+     q09 x 'ε' → [q11, q01],
+     q10 x 'ε' → [q08, q09]]
 s0 = q00
-F = [q13]
+F = [q11]
 
-[*] Alternative with L( (a|b) ):
+[+] Converting to DFA
+[*] Initial S_D = [q06q08q07q09q00q11q02q03q05q01]
+[*] Checking q06q08q07q09q00q11q02q03q05q01
+     T:= move(q06q08q07q09q00q11q02q03q05q01, 'a') = [q04] => epsilon-closure(T) = q06q08q07q09q11q02q04q03q05q01
+     q06q08q07q09q00q11q02q03q05q01 x 'a' → [q06q08q07q09q11q02q04q03q05q01]
+
+     T:= move(q06q08q07q09q00q11q02q03q05q01, 'b') = [q10] => epsilon-closure(T) = q06q08q10q07q09q11q02q03q05q01
+     q06q08q07q09q00q11q02q03q05q01 x 'b' → [q06q08q10q07q09q11q02q03q05q01]
+[*] Checking q06q08q07q09q11q02q04q03q05q01
+     T:= move(q06q08q07q09q11q02q04q03q05q01, 'a') = [q04] => epsilon-closure(T) = q06q08q07q09q11q02q04q03q05q01
+     q06q08q07q09q11q02q04q03q05q01 x 'a' → [q06q08q07q09q11q02q04q03q05q01]
+
+     T:= move(q06q08q07q09q11q02q04q03q05q01, 'b') = [q10] => epsilon-closure(T) = q06q08q10q07q09q11q02q03q05q01
+     q06q08q07q09q11q02q04q03q05q01 x 'b' → [q06q08q10q07q09q11q02q03q05q01]
+[*] Checking q06q08q10q07q09q11q02q03q05q01
+     T:= move(q06q08q10q07q09q11q02q03q05q01, 'a') = [q04] => epsilon-closure(T) = q06q08q07q09q11q02q04q03q05q01
+     q06q08q10q07q09q11q02q03q05q01 x 'a' → [q06q08q07q09q11q02q04q03q05q01]
+
+     T:= move(q06q08q10q07q09q11q02q03q05q01, 'b') = [q10] => epsilon-closure(T) = q06q08q10q07q09q11q02q03q05q01
+     q06q08q10q07q09q11q02q03q05q01 x 'b' → [q06q08q10q07q09q11q02q03q05q01]
+[*] States and Lambda done
+[*] Renaming States
+[*] Done
+
+DFA = (S, Σ, δ, s0, F)
+S = [q0, q1, q2]
+Σ = [a, b]
+δ = [q0 x 'a' → [q1], q0 x 'b' → [q2],
+     q1 x 'a' → [q1], q1 x 'b' → [q2],
+     q2 x 'a' → [q1], q2 x 'b' → [q2]]
+s0 = q0
+F = [q0, q1, q2]
+
+[+] Minimizing DFA
+[*] Building groups
+     Π0 = [[q0, q1, q2]]
+[*] Groups built
+[*] Building DFA_min
+[*] Creating S_min
+[*] Creating δ_min
+[*] Renaming States
+[*] Done
+
+DFA = (S, Σ, δ, s0, F)
+S = [q0]
+Σ = [a, b]
+δ = [q0 x 'a' → [q0], q0 x 'b' → [q0]]
+s0 = q0
+F = [q0]
+
+[+] All tests passed! Conversion and minimization are correct!
+[+] Creating .dot and .png files of all FAs generated!
+[+] Done
+
++------------------------------------------------------------------------------+
+|##############################################################################|
+|##############################################################################|
+|##############################################################################|
++------------------------------------------------------------------------------+
+[+] Parsing expression
+       in  = (a|b)*abb(a|b)*
+[+] Parse succsessfull
+     P(in) = (a|b)*abb(a|b)*
+[+] Building NFA
+[*] Alternative with L( a|b ):
 NFA = (S, Σ, δ, s0, F)
 S = [q0, q1, q2, q3, q4, q5]
 Σ = [a, b, ε]
@@ -237,13 +261,93 @@ F = [q5]
 NFA = (S, Σ, δ, s0, F)
 S = [q0, q1, q2, q3, q4, q5, q6, q7]
 Σ = [a, b, ε]
-δ = [q0 x 'ε' → [q1, q7],
+δ = [q0 x 'ε' → [q7, q1],
      q1 x 'ε' → [q2, q3],
      q2 x 'a' → [q4],
      q3 x 'b' → [q5],
      q4 x 'ε' → [q6],
      q5 x 'ε' → [q6],
-     q6 x 'ε' → [q1, q7]]
+     q6 x 'ε' → [q7, q1]]
+s0 = q0
+F = [q7]
+
+[*] Concat with L( (a|b)*a ):
+NFA = (S, Σ, δ, s0, F)
+S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09]
+Σ = [a, b, ε]
+δ = [q00 x 'ε' → [q01, q02],
+     q01 x 'ε' → [q03],
+     q02 x 'ε' → [q04, q05],
+     q03 x 'a' → [q09],
+     q04 x 'a' → [q06],
+     q05 x 'b' → [q07],
+     q06 x 'ε' → [q08],
+     q07 x 'ε' → [q08],
+     q08 x 'ε' → [q01, q02]]
+s0 = q00
+F = [q09]
+
+[*] Concat with L( (a|b)*ab ):
+NFA = (S, Σ, δ, s0, F)
+S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11]
+Σ = [a, b, ε]
+δ = [q00 x 'ε' → [q01, q02],
+     q01 x 'ε' → [q03],
+     q02 x 'ε' → [q04, q05],
+     q03 x 'a' → [q06],
+     q04 x 'a' → [q07],
+     q05 x 'b' → [q08],
+     q06 x 'ε' → [q09],
+     q07 x 'ε' → [q10],
+     q08 x 'ε' → [q10],
+     q09 x 'b' → [q11],
+     q10 x 'ε' → [q01, q02]]
+s0 = q00
+F = [q11]
+
+[*] Concat with L( (a|b)*abb ):
+NFA = (S, Σ, δ, s0, F)
+S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, q12, q13]
+Σ = [a, b, ε]
+δ = [q00 x 'ε' → [q01, q02],
+     q01 x 'ε' → [q03],
+     q02 x 'ε' → [q04, q05],
+     q03 x 'a' → [q06],
+     q04 x 'a' → [q07],
+     q05 x 'b' → [q08],
+     q06 x 'ε' → [q09],
+     q07 x 'ε' → [q10],
+     q08 x 'ε' → [q10],
+     q09 x 'b' → [q11],
+     q10 x 'ε' → [q01, q02],
+     q11 x 'ε' → [q12],
+     q12 x 'b' → [q13]]
+s0 = q00
+F = [q13]
+
+[*] Alternative with L( a|b ):
+NFA = (S, Σ, δ, s0, F)
+S = [q0, q1, q2, q3, q4, q5]
+Σ = [a, b, ε]
+δ = [q0 x 'ε' → [q1, q2],
+     q1 x 'a' → [q3],
+     q2 x 'b' → [q4],
+     q3 x 'ε' → [q5],
+     q4 x 'ε' → [q5]]
+s0 = q0
+F = [q5]
+
+[*] Iteration with L( (a|b)* ):
+NFA = (S, Σ, δ, s0, F)
+S = [q0, q1, q2, q3, q4, q5, q6, q7]
+Σ = [a, b, ε]
+δ = [q0 x 'ε' → [q7, q1],
+     q1 x 'ε' → [q2, q3],
+     q2 x 'a' → [q4],
+     q3 x 'b' → [q5],
+     q4 x 'ε' → [q6],
+     q5 x 'ε' → [q6],
+     q6 x 'ε' → [q7, q1]]
 s0 = q0
 F = [q7]
 
@@ -252,26 +356,26 @@ NFA = (S, Σ, δ, s0, F)
 S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19, q20, q21]
 Σ = [a, b, ε]
 δ = [q00 x 'ε' → [q01, q02],
-     q01 x 'ε' → [q03, q04],
-     q02 x 'ε' → [q05],
-     q03 x 'b' → [q06],
+     q01 x 'ε' → [q03],
+     q02 x 'ε' → [q04, q05],
+     q03 x 'a' → [q06],
      q04 x 'a' → [q07],
-     q05 x 'a' → [q08],
+     q05 x 'b' → [q08],
      q06 x 'ε' → [q09],
-     q07 x 'ε' → [q09],
+     q07 x 'ε' → [q10],
      q08 x 'ε' → [q10],
-     q09 x 'ε' → [q01, q02],
-     q10 x 'b' → [q11],
+     q09 x 'b' → [q11],
+     q10 x 'ε' → [q01, q02],
      q11 x 'ε' → [q12],
      q12 x 'b' → [q13],
      q13 x 'ε' → [q14],
-     q14 x 'ε' → [q15, q21],
+     q14 x 'ε' → [q21, q15],
      q15 x 'ε' → [q16, q17],
      q16 x 'a' → [q18],
      q17 x 'b' → [q19],
      q18 x 'ε' → [q20],
      q19 x 'ε' → [q20],
-     q20 x 'ε' → [q15, q21]]
+     q20 x 'ε' → [q21, q15]]
 s0 = q00
 F = [q21]
 
@@ -280,85 +384,85 @@ NFA = (S, Σ, δ, s0, F)
 S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19, q20, q21]
 Σ = [a, b, ε]
 δ = [q00 x 'ε' → [q01, q02],
-     q01 x 'ε' → [q03, q04],
-     q02 x 'ε' → [q05],
-     q03 x 'b' → [q06],
+     q01 x 'ε' → [q03],
+     q02 x 'ε' → [q04, q05],
+     q03 x 'a' → [q06],
      q04 x 'a' → [q07],
-     q05 x 'a' → [q08],
+     q05 x 'b' → [q08],
      q06 x 'ε' → [q09],
-     q07 x 'ε' → [q09],
+     q07 x 'ε' → [q10],
      q08 x 'ε' → [q10],
-     q09 x 'ε' → [q01, q02],
-     q10 x 'b' → [q11],
+     q09 x 'b' → [q11],
+     q10 x 'ε' → [q01, q02],
      q11 x 'ε' → [q12],
      q12 x 'b' → [q13],
      q13 x 'ε' → [q14],
-     q14 x 'ε' → [q15, q21],
+     q14 x 'ε' → [q21, q15],
      q15 x 'ε' → [q16, q17],
      q16 x 'a' → [q18],
      q17 x 'b' → [q19],
      q18 x 'ε' → [q20],
      q19 x 'ε' → [q20],
-     q20 x 'ε' → [q15, q21]]
+     q20 x 'ε' → [q21, q15]]
 s0 = q00
 F = [q21]
 
 [+] Converting to DFA
-[*] Initial S_D = [q03q01q00q02q05q04]
-[*] Checking q03q01q00q02q05q04
-     T:= move(q03q01q00q02q05q04, 'a') = [q07, q08] => epsilon-closure(T) = q07q03q01q09q02q05q08q10q04
-     q03q01q00q02q05q04 x 'a' → [q07q03q01q09q02q05q08q10q04]
+[*] Initial S_D = [q00q01q03q04q05q02]
+[*] Checking q00q01q03q04q05q02
+     T:= move(q00q01q03q04q05q02, 'a') = [q06, q07] => epsilon-closure(T) = q10q01q03q06q09q04q07q05q02
+     q00q01q03q04q05q02 x 'a' → [q10q01q03q06q09q04q07q05q02]
 
-     T:= move(q03q01q00q02q05q04, 'b') = [q06] => epsilon-closure(T) = q03q06q01q09q02q05q04
-     q03q01q00q02q05q04 x 'b' → [q03q06q01q09q02q05q04]
-[*] Checking q07q03q01q09q02q05q08q10q04
-     T:= move(q07q03q01q09q02q05q08q10q04, 'a') = [q07, q08] => epsilon-closure(T) = q07q03q01q09q02q05q08q10q04
-     q07q03q01q09q02q05q08q10q04 x 'a' → [q07q03q01q09q02q05q08q10q04]
+     T:= move(q00q01q03q04q05q02, 'b') = [q08] => epsilon-closure(T) = q10q01q03q04q05q08q02
+     q00q01q03q04q05q02 x 'b' → [q10q01q03q04q05q08q02]
+[*] Checking q10q01q03q06q09q04q07q05q02
+     T:= move(q10q01q03q06q09q04q07q05q02, 'a') = [q06, q07] => epsilon-closure(T) = q10q01q03q06q09q04q07q05q02
+     q10q01q03q06q09q04q07q05q02 x 'a' → [q10q01q03q06q09q04q07q05q02]
 
-     T:= move(q07q03q01q09q02q05q08q10q04, 'b') = [q06, q11] => epsilon-closure(T) = q03q06q01q09q02q05q11q12q04
-     q07q03q01q09q02q05q08q10q04 x 'b' → [q03q06q01q09q02q05q11q12q04]
-[*] Checking q03q06q01q09q02q05q04
-     T:= move(q03q06q01q09q02q05q04, 'a') = [q07, q08] => epsilon-closure(T) = q07q03q01q09q02q05q08q10q04
-     q03q06q01q09q02q05q04 x 'a' → [q07q03q01q09q02q05q08q10q04]
+     T:= move(q10q01q03q06q09q04q07q05q02, 'b') = [q11, q08] => epsilon-closure(T) = q10q01q03q11q12q04q05q08q02
+     q10q01q03q06q09q04q07q05q02 x 'b' → [q10q01q03q11q12q04q05q08q02]
+[*] Checking q10q01q03q04q05q08q02
+     T:= move(q10q01q03q04q05q08q02, 'a') = [q06, q07] => epsilon-closure(T) = q10q01q03q06q09q04q07q05q02
+     q10q01q03q04q05q08q02 x 'a' → [q10q01q03q06q09q04q07q05q02]
 
-     T:= move(q03q06q01q09q02q05q04, 'b') = [q06] => epsilon-closure(T) = q03q06q01q09q02q05q04
-     q03q06q01q09q02q05q04 x 'b' → [q03q06q01q09q02q05q04]
-[*] Checking q03q06q01q09q02q05q11q12q04
-     T:= move(q03q06q01q09q02q05q11q12q04, 'a') = [q07, q08] => epsilon-closure(T) = q07q03q01q09q02q05q08q10q04
-     q03q06q01q09q02q05q11q12q04 x 'a' → [q07q03q01q09q02q05q08q10q04]
+     T:= move(q10q01q03q04q05q08q02, 'b') = [q08] => epsilon-closure(T) = q10q01q03q04q05q08q02
+     q10q01q03q04q05q08q02 x 'b' → [q10q01q03q04q05q08q02]
+[*] Checking q10q01q03q11q12q04q05q08q02
+     T:= move(q10q01q03q11q12q04q05q08q02, 'a') = [q06, q07] => epsilon-closure(T) = q10q01q03q06q09q04q07q05q02
+     q10q01q03q11q12q04q05q08q02 x 'a' → [q10q01q03q06q09q04q07q05q02]
 
-     T:= move(q03q06q01q09q02q05q11q12q04, 'b') = [q06, q13] => epsilon-closure(T) = q15q14q21q04q03q06q01q09q02q05q13q16q17
-     q03q06q01q09q02q05q11q12q04 x 'b' → [q15q14q21q04q03q06q01q09q02q05q13q16q17]
-[*] Checking q15q14q21q04q03q06q01q09q02q05q13q16q17
-     T:= move(q15q14q21q04q03q06q01q09q02q05q13q16q17, 'a') = [q07, q08, q18] => epsilon-closure(T) = q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17
-     q15q14q21q04q03q06q01q09q02q05q13q16q17 x 'a' → [q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17]
+     T:= move(q10q01q03q11q12q04q05q08q02, 'b') = [q13, q08] => epsilon-closure(T) = q10q01q03q13q16q17q15q14q21q04q05q08q02
+     q10q01q03q11q12q04q05q08q02 x 'b' → [q10q01q03q13q16q17q15q14q21q04q05q08q02]
+[*] Checking q10q01q03q13q16q17q15q14q21q04q05q08q02
+     T:= move(q10q01q03q13q16q17q15q14q21q04q05q08q02, 'a') = [q06, q18, q07] => epsilon-closure(T) = q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02
+     q10q01q03q13q16q17q15q14q21q04q05q08q02 x 'a' → [q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02]
 
-     T:= move(q15q14q21q04q03q06q01q09q02q05q13q16q17, 'b') = [q19, q06] => epsilon-closure(T) = q19q15q20q21q04q03q06q01q09q02q05q16q17
-     q15q14q21q04q03q06q01q09q02q05q13q16q17 x 'b' → [q19q15q20q21q04q03q06q01q09q02q05q16q17]
-[*] Checking q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17
-     T:= move(q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17, 'a') = [q07, q08, q18] => epsilon-closure(T) = q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17
-     q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17 x 'a' → [q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17]
+     T:= move(q10q01q03q13q16q17q15q14q21q04q05q08q02, 'b') = [q19, q08] => epsilon-closure(T) = q10q01q03q16q17q19q15q20q21q04q05q08q02
+     q10q01q03q13q16q17q15q14q21q04q05q08q02 x 'b' → [q10q01q03q16q17q19q15q20q21q04q05q08q02]
+[*] Checking q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02
+     T:= move(q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02, 'a') = [q06, q18, q07] => epsilon-closure(T) = q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02
+     q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02 x 'a' → [q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02]
 
-     T:= move(q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17, 'b') = [q19, q06, q11] => epsilon-closure(T) = q19q15q20q21q04q03q06q01q09q02q05q11q12q16q17
-     q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17 x 'b' → [q19q15q20q21q04q03q06q01q09q02q05q11q12q16q17]
-[*] Checking q19q15q20q21q04q03q06q01q09q02q05q16q17
-     T:= move(q19q15q20q21q04q03q06q01q09q02q05q16q17, 'a') = [q07, q08, q18] => epsilon-closure(T) = q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17
-     q19q15q20q21q04q03q06q01q09q02q05q16q17 x 'a' → [q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17]
+     T:= move(q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02, 'b') = [q11, q19, q08] => epsilon-closure(T) = q10q01q03q11q12q16q17q19q15q20q21q04q05q08q02
+     q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02 x 'b' → [q10q01q03q11q12q16q17q19q15q20q21q04q05q08q02]
+[*] Checking q10q01q03q16q17q19q15q20q21q04q05q08q02
+     T:= move(q10q01q03q16q17q19q15q20q21q04q05q08q02, 'a') = [q06, q18, q07] => epsilon-closure(T) = q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02
+     q10q01q03q16q17q19q15q20q21q04q05q08q02 x 'a' → [q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02]
 
-     T:= move(q19q15q20q21q04q03q06q01q09q02q05q16q17, 'b') = [q19, q06] => epsilon-closure(T) = q19q15q20q21q04q03q06q01q09q02q05q16q17
-     q19q15q20q21q04q03q06q01q09q02q05q16q17 x 'b' → [q19q15q20q21q04q03q06q01q09q02q05q16q17]
-[*] Checking q19q15q20q21q04q03q06q01q09q02q05q11q12q16q17
-     T:= move(q19q15q20q21q04q03q06q01q09q02q05q11q12q16q17, 'a') = [q07, q08, q18] => epsilon-closure(T) = q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17
-     q19q15q20q21q04q03q06q01q09q02q05q11q12q16q17 x 'a' → [q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17]
+     T:= move(q10q01q03q16q17q19q15q20q21q04q05q08q02, 'b') = [q19, q08] => epsilon-closure(T) = q10q01q03q16q17q19q15q20q21q04q05q08q02
+     q10q01q03q16q17q19q15q20q21q04q05q08q02 x 'b' → [q10q01q03q16q17q19q15q20q21q04q05q08q02]
+[*] Checking q10q01q03q11q12q16q17q19q15q20q21q04q05q08q02
+     T:= move(q10q01q03q11q12q16q17q19q15q20q21q04q05q08q02, 'a') = [q06, q18, q07] => epsilon-closure(T) = q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02
+     q10q01q03q11q12q16q17q19q15q20q21q04q05q08q02 x 'a' → [q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02]
 
-     T:= move(q19q15q20q21q04q03q06q01q09q02q05q11q12q16q17, 'b') = [q19, q06, q13] => epsilon-closure(T) = q19q15q20q14q21q04q03q06q01q09q02q05q13q16q17
-     q19q15q20q21q04q03q06q01q09q02q05q11q12q16q17 x 'b' → [q19q15q20q14q21q04q03q06q01q09q02q05q13q16q17]
-[*] Checking q19q15q20q14q21q04q03q06q01q09q02q05q13q16q17
-     T:= move(q19q15q20q14q21q04q03q06q01q09q02q05q13q16q17, 'a') = [q07, q08, q18] => epsilon-closure(T) = q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17
-     q19q15q20q14q21q04q03q06q01q09q02q05q13q16q17 x 'a' → [q15q20q21q04q07q03q01q09q02q05q08q10q16q18q17]
+     T:= move(q10q01q03q11q12q16q17q19q15q20q21q04q05q08q02, 'b') = [q13, q19, q08] => epsilon-closure(T) = q10q01q03q13q16q17q19q15q20q14q21q04q05q08q02
+     q10q01q03q11q12q16q17q19q15q20q21q04q05q08q02 x 'b' → [q10q01q03q13q16q17q19q15q20q14q21q04q05q08q02]
+[*] Checking q10q01q03q13q16q17q19q15q20q14q21q04q05q08q02
+     T:= move(q10q01q03q13q16q17q19q15q20q14q21q04q05q08q02, 'a') = [q06, q18, q07] => epsilon-closure(T) = q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02
+     q10q01q03q13q16q17q19q15q20q14q21q04q05q08q02 x 'a' → [q10q01q03q06q09q16q18q17q15q20q21q04q07q05q02]
 
-     T:= move(q19q15q20q14q21q04q03q06q01q09q02q05q13q16q17, 'b') = [q19, q06] => epsilon-closure(T) = q19q15q20q21q04q03q06q01q09q02q05q16q17
-     q19q15q20q14q21q04q03q06q01q09q02q05q13q16q17 x 'b' → [q19q15q20q21q04q03q06q01q09q02q05q16q17]
+     T:= move(q10q01q03q13q16q17q19q15q20q14q21q04q05q08q02, 'b') = [q19, q08] => epsilon-closure(T) = q10q01q03q16q17q19q15q20q21q04q05q08q02
+     q10q01q03q13q16q17q19q15q20q14q21q04q05q08q02 x 'b' → [q10q01q03q16q17q19q15q20q21q04q05q08q02]
 [*] States and Lambda done
 [*] Renaming States
 [*] Done
@@ -408,3 +512,273 @@ F = [q3]
 [+] Creating .dot and .png files of all FAs generated!
 [+] Done
 
++------------------------------------------------------------------------------+
+|##############################################################################|
+|##############################################################################|
+|##############################################################################|
++------------------------------------------------------------------------------+
+[+] Parsing expression
+       in  = (a|b)*a(a|b)(a|b)
+[+] Parse succsessfull
+     P(in) = (a|b)*a(a|b)(a|b)
+[+] Building NFA
+[*] Alternative with L( a|b ):
+NFA = (S, Σ, δ, s0, F)
+S = [q0, q1, q2, q3, q4, q5]
+Σ = [a, b, ε]
+δ = [q0 x 'ε' → [q1, q2],
+     q1 x 'b' → [q3],
+     q2 x 'a' → [q4],
+     q3 x 'ε' → [q5],
+     q4 x 'ε' → [q5]]
+s0 = q0
+F = [q5]
+
+[*] Iteration with L( (a|b)* ):
+NFA = (S, Σ, δ, s0, F)
+S = [q0, q1, q2, q3, q4, q5, q6, q7]
+Σ = [a, b, ε]
+δ = [q0 x 'ε' → [q1, q7],
+     q1 x 'ε' → [q2, q3],
+     q2 x 'b' → [q4],
+     q3 x 'a' → [q5],
+     q4 x 'ε' → [q6],
+     q5 x 'ε' → [q6],
+     q6 x 'ε' → [q1, q7]]
+s0 = q0
+F = [q7]
+
+[*] Concat with L( (a|b)*a ):
+NFA = (S, Σ, δ, s0, F)
+S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09]
+Σ = [a, b, ε]
+δ = [q00 x 'ε' → [q01, q02],
+     q01 x 'ε' → [q03, q04],
+     q02 x 'ε' → [q05],
+     q03 x 'b' → [q06],
+     q04 x 'a' → [q07],
+     q05 x 'a' → [q09],
+     q06 x 'ε' → [q08],
+     q07 x 'ε' → [q08],
+     q08 x 'ε' → [q01, q02]]
+s0 = q00
+F = [q09]
+
+[*] Alternative with L( a|b ):
+NFA = (S, Σ, δ, s0, F)
+S = [q0, q1, q2, q3, q4, q5]
+Σ = [a, b, ε]
+δ = [q0 x 'ε' → [q1, q2],
+     q1 x 'a' → [q3],
+     q2 x 'b' → [q4],
+     q3 x 'ε' → [q5],
+     q4 x 'ε' → [q5]]
+s0 = q0
+F = [q5]
+
+[*] Concat with L( (a|b)*a(a|b) ):
+NFA = (S, Σ, δ, s0, F)
+S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, q12, q13, q14, q15]
+Σ = [a, b, ε]
+δ = [q00 x 'ε' → [q01, q02],
+     q01 x 'ε' → [q03, q04],
+     q02 x 'ε' → [q05],
+     q03 x 'b' → [q06],
+     q04 x 'a' → [q07],
+     q05 x 'a' → [q08],
+     q06 x 'ε' → [q09],
+     q07 x 'ε' → [q09],
+     q08 x 'ε' → [q10],
+     q09 x 'ε' → [q01, q02],
+     q10 x 'ε' → [q11, q12],
+     q11 x 'a' → [q13],
+     q12 x 'b' → [q14],
+     q13 x 'ε' → [q15],
+     q14 x 'ε' → [q15]]
+s0 = q00
+F = [q15]
+
+[*] Alternative with L( a|b ):
+NFA = (S, Σ, δ, s0, F)
+S = [q0, q1, q2, q3, q4, q5]
+Σ = [a, b, ε]
+δ = [q0 x 'ε' → [q1, q2],
+     q1 x 'b' → [q3],
+     q2 x 'a' → [q4],
+     q3 x 'ε' → [q5],
+     q4 x 'ε' → [q5]]
+s0 = q0
+F = [q5]
+
+[*] Concat with L( (a|b)*a(a|b)(a|b) ):
+NFA = (S, Σ, δ, s0, F)
+S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19, q20, q21]
+Σ = [a, b, ε]
+δ = [q00 x 'ε' → [q01, q02],
+     q01 x 'ε' → [q03, q04],
+     q02 x 'ε' → [q05],
+     q03 x 'b' → [q06],
+     q04 x 'a' → [q07],
+     q05 x 'a' → [q08],
+     q06 x 'ε' → [q09],
+     q07 x 'ε' → [q09],
+     q08 x 'ε' → [q10],
+     q09 x 'ε' → [q01, q02],
+     q10 x 'ε' → [q11, q12],
+     q11 x 'a' → [q13],
+     q12 x 'b' → [q14],
+     q13 x 'ε' → [q15],
+     q14 x 'ε' → [q15],
+     q15 x 'ε' → [q16],
+     q16 x 'ε' → [q17, q18],
+     q17 x 'b' → [q19],
+     q18 x 'a' → [q20],
+     q19 x 'ε' → [q21],
+     q20 x 'ε' → [q21]]
+s0 = q00
+F = [q21]
+
+[+] NFA done
+NFA = (S, Σ, δ, s0, F)
+S = [q00, q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19, q20, q21]
+Σ = [a, b, ε]
+δ = [q00 x 'ε' → [q01, q02],
+     q01 x 'ε' → [q03, q04],
+     q02 x 'ε' → [q05],
+     q03 x 'b' → [q06],
+     q04 x 'a' → [q07],
+     q05 x 'a' → [q08],
+     q06 x 'ε' → [q09],
+     q07 x 'ε' → [q09],
+     q08 x 'ε' → [q10],
+     q09 x 'ε' → [q01, q02],
+     q10 x 'ε' → [q11, q12],
+     q11 x 'a' → [q13],
+     q12 x 'b' → [q14],
+     q13 x 'ε' → [q15],
+     q14 x 'ε' → [q15],
+     q15 x 'ε' → [q16],
+     q16 x 'ε' → [q17, q18],
+     q17 x 'b' → [q19],
+     q18 x 'a' → [q20],
+     q19 x 'ε' → [q21],
+     q20 x 'ε' → [q21]]
+s0 = q00
+F = [q21]
+
+[+] Converting to DFA
+[*] Initial S_D = [q03q01q00q02q05q04]
+[*] Checking q03q01q00q02q05q04
+     T:= move(q03q01q00q02q05q04, 'a') = [q08, q07] => epsilon-closure(T) = q03q01q09q02q05q08q11q12q10q04q07
+     q03q01q00q02q05q04 x 'a' → [q03q01q09q02q05q08q11q12q10q04q07]
+
+     T:= move(q03q01q00q02q05q04, 'b') = [q06] => epsilon-closure(T) = q03q06q01q09q02q05q04
+     q03q01q00q02q05q04 x 'b' → [q03q06q01q09q02q05q04]
+[*] Checking q03q01q09q02q05q08q11q12q10q04q07
+     T:= move(q03q01q09q02q05q08q11q12q10q04q07, 'a') = [q08, q13, q07] => epsilon-closure(T) = q03q01q09q02q05q08q11q13q12q10q15q18q17q16q04q07
+     q03q01q09q02q05q08q11q12q10q04q07 x 'a' → [q03q01q09q02q05q08q11q13q12q10q15q18q17q16q04q07]
+
+     T:= move(q03q01q09q02q05q08q11q12q10q04q07, 'b') = [q06, q14] => epsilon-closure(T) = q03q17q06q01q16q09q02q05q14q15q04q18
+     q03q01q09q02q05q08q11q12q10q04q07 x 'b' → [q03q17q06q01q16q09q02q05q14q15q04q18]
+[*] Checking q03q06q01q09q02q05q04
+     T:= move(q03q06q01q09q02q05q04, 'a') = [q08, q07] => epsilon-closure(T) = q03q01q09q02q05q08q11q12q10q04q07
+     q03q06q01q09q02q05q04 x 'a' → [q03q01q09q02q05q08q11q12q10q04q07]
+
+     T:= move(q03q06q01q09q02q05q04, 'b') = [q06] => epsilon-closure(T) = q03q06q01q09q02q05q04
+     q03q06q01q09q02q05q04 x 'b' → [q03q06q01q09q02q05q04]
+[*] Checking q03q01q09q02q05q08q11q13q12q10q15q18q17q16q04q07
+     T:= move(q03q01q09q02q05q08q11q13q12q10q15q18q17q16q04q07, 'a') = [q08, q13, q20, q07] => epsilon-closure(T) = q03q01q09q02q05q08q11q13q12q10q15q18q20q17q16q21q04q07
+     q03q01q09q02q05q08q11q13q12q10q15q18q17q16q04q07 x 'a' → [q03q01q09q02q05q08q11q13q12q10q15q18q20q17q16q21q04q07]
+
+     T:= move(q03q01q09q02q05q08q11q13q12q10q15q18q17q16q04q07, 'b') = [q06, q19, q14] => epsilon-closure(T) = q03q06q01q09q02q05q14q15q18q17q19q16q21q04
+     q03q01q09q02q05q08q11q13q12q10q15q18q17q16q04q07 x 'b' → [q03q06q01q09q02q05q14q15q18q17q19q16q21q04]
+[*] Checking q03q17q06q01q16q09q02q05q14q15q04q18
+     T:= move(q03q17q06q01q16q09q02q05q14q15q04q18, 'a') = [q08, q07, q20] => epsilon-closure(T) = q03q01q09q02q05q08q11q12q10q20q21q04q07
+     q03q17q06q01q16q09q02q05q14q15q04q18 x 'a' → [q03q01q09q02q05q08q11q12q10q20q21q04q07]
+
+     T:= move(q03q17q06q01q16q09q02q05q14q15q04q18, 'b') = [q06, q19] => epsilon-closure(T) = q03q06q19q01q09q21q02q05q04
+     q03q17q06q01q16q09q02q05q14q15q04q18 x 'b' → [q03q06q19q01q09q21q02q05q04]
+[*] Checking q03q01q09q02q05q08q11q13q12q10q15q18q20q17q16q21q04q07
+     T:= move(q03q01q09q02q05q08q11q13q12q10q15q18q20q17q16q21q04q07, 'a') = [q08, q13, q20, q07] => epsilon-closure(T) = q03q01q09q02q05q08q11q13q12q10q15q18q20q17q16q21q04q07
+     q03q01q09q02q05q08q11q13q12q10q15q18q20q17q16q21q04q07 x 'a' → [q03q01q09q02q05q08q11q13q12q10q15q18q20q17q16q21q04q07]
+
+     T:= move(q03q01q09q02q05q08q11q13q12q10q15q18q20q17q16q21q04q07, 'b') = [q06, q19, q14] => epsilon-closure(T) = q03q06q01q09q02q05q14q15q18q17q19q16q21q04
+     q03q01q09q02q05q08q11q13q12q10q15q18q20q17q16q21q04q07 x 'b' → [q03q06q01q09q02q05q14q15q18q17q19q16q21q04]
+[*] Checking q03q06q01q09q02q05q14q15q18q17q19q16q21q04
+     T:= move(q03q06q01q09q02q05q14q15q18q17q19q16q21q04, 'a') = [q08, q20, q07] => epsilon-closure(T) = q03q01q09q02q05q08q11q12q10q20q21q04q07
+     q03q06q01q09q02q05q14q15q18q17q19q16q21q04 x 'a' → [q03q01q09q02q05q08q11q12q10q20q21q04q07]
+
+     T:= move(q03q06q01q09q02q05q14q15q18q17q19q16q21q04, 'b') = [q06, q19] => epsilon-closure(T) = q03q06q19q01q09q21q02q05q04
+     q03q06q01q09q02q05q14q15q18q17q19q16q21q04 x 'b' → [q03q06q19q01q09q21q02q05q04]
+[*] Checking q03q01q09q02q05q08q11q12q10q20q21q04q07
+     T:= move(q03q01q09q02q05q08q11q12q10q20q21q04q07, 'a') = [q08, q13, q07] => epsilon-closure(T) = q03q01q09q02q05q08q11q13q12q10q15q18q17q16q04q07
+     q03q01q09q02q05q08q11q12q10q20q21q04q07 x 'a' → [q03q01q09q02q05q08q11q13q12q10q15q18q17q16q04q07]
+
+     T:= move(q03q01q09q02q05q08q11q12q10q20q21q04q07, 'b') = [q06, q14] => epsilon-closure(T) = q03q17q06q01q16q09q02q05q14q15q04q18
+     q03q01q09q02q05q08q11q12q10q20q21q04q07 x 'b' → [q03q17q06q01q16q09q02q05q14q15q04q18]
+[*] Checking q03q06q19q01q09q21q02q05q04
+     T:= move(q03q06q19q01q09q21q02q05q04, 'a') = [q08, q07] => epsilon-closure(T) = q03q01q09q02q05q08q11q12q10q04q07
+     q03q06q19q01q09q21q02q05q04 x 'a' → [q03q01q09q02q05q08q11q12q10q04q07]
+
+     T:= move(q03q06q19q01q09q21q02q05q04, 'b') = [q06] => epsilon-closure(T) = q03q06q01q09q02q05q04
+     q03q06q19q01q09q21q02q05q04 x 'b' → [q03q06q01q09q02q05q04]
+[*] States and Lambda done
+[*] Renaming States
+[*] Done
+
+DFA = (S, Σ, δ, s0, F)
+S = [q0, q1, q2, q3, q4, q5, q6, q7, q8]
+Σ = [a, b]
+δ = [q0 x 'a' → [q1], q0 x 'b' → [q2],
+     q1 x 'a' → [q3], q1 x 'b' → [q4],
+     q2 x 'a' → [q1], q2 x 'b' → [q2],
+     q3 x 'a' → [q5], q3 x 'b' → [q6],
+     q4 x 'a' → [q7], q4 x 'b' → [q8],
+     q5 x 'a' → [q5], q5 x 'b' → [q6],
+     q6 x 'a' → [q7], q6 x 'b' → [q8],
+     q7 x 'a' → [q3], q7 x 'b' → [q4],
+     q8 x 'a' → [q1], q8 x 'b' → [q2]]
+s0 = q0
+F = [q5, q6, q7, q8]
+
+[+] Minimizing DFA
+[*] Building groups
+     Π0 = [[q5, q6, q7, q8], [q0, q1, q2, q3, q4]]
+          Splitting [q5, q6, q7, q8] into [q5, q6] and [q7, q8]
+
+          Splitting [q0, q1, q2, q3, q4] into [q0, q1, q2] and [q3, q4]
+
+     Π1 = [[q5, q6], [q7, q8], [q0, q1, q2], [q3, q4]]
+          Splitting [q5, q6] into [q5] and [q6]
+
+          Splitting [q7, q8] into [q7] and [q8]
+
+          Splitting [q0, q1, q2] into [q0, q2] and [q1]
+
+          Splitting [q3, q4] into [q3] and [q4]
+
+     Π2 = [[q5], [q6], [q7], [q8], [q0, q2], [q1], [q3], [q4]]
+[*] Groups built
+[*] Building DFA_min
+[*] Creating S_min
+[*] Creating δ_min
+[*] Renaming States
+[*] Done
+
+DFA = (S, Σ, δ, s0, F)
+S = [q0, q1, q2, q3, q4, q5, q6, q7]
+Σ = [a, b]
+δ = [q0 x 'a' → [q1], q0 x 'b' → [q0],
+     q1 x 'a' → [q2], q1 x 'b' → [q3],
+     q2 x 'a' → [q5], q2 x 'b' → [q6],
+     q3 x 'a' → [q7], q3 x 'b' → [q4],
+     q4 x 'a' → [q1], q4 x 'b' → [q0],
+     q5 x 'a' → [q5], q5 x 'b' → [q6],
+     q6 x 'a' → [q7], q6 x 'b' → [q4],
+     q7 x 'a' → [q2], q7 x 'b' → [q3]]
+s0 = q0
+F = [q4, q5, q6, q7]
+
+[+] All tests passed! Conversion and minimization are correct!
+[+] Creating .dot and .png files of all FAs generated!
+[+] Done

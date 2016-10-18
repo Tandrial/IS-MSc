@@ -8,30 +8,29 @@ Aufgabe 2.1: (Reguläre Audrücke)
 
 Aufgabe 2.2: (Reguläre Definitionen)
 
-  a) (0|11|101)+
+  a) (0|10*1)*
 
   b)
-    <FLOAT> -> <SIGN>(<NUM>(<EXP> | <EXP>?<SUFFIX>)
-                     | (<NUM>'.'<NUM>? | '.'<NUM>) <EXP>?<SUFFIX>?)
-    <NUM> -> [0-9]+
+    <DOUBLE> -> <SIGN>(<NUM>(<EXP><SUFFIX>? | <EXP>?<SUFFIX>)
+                     | (<NUM>'.'<NUM>* | <NUM>?'.'<NUM>+) <EXP>?<SUFFIX>?)
+    <NUM> -> ([1-9][0-9]* | 0)
     <SIGN> -> ε | '+' | '-'
-    <SUFFIX> -> 'f' | 'F'
+    <SUFFIX> -> ('f' | 'F' | 'd' | 'D')
     <EXP> -> ('e'|'E')<SIGN><NUM>
 
   c)
-    <MULTI_LINE_CMNT> -> <START_CMNT><STRING><END_CMNT>
-    <STRING> = '"'<START_CMNT>?<STRING><END_CMNT>?'"' | <APLHANUM>*
-    <ALPHANUM> = [a-z] | [A-Z] | [0-9]
-    <START_CMNT> -> '/''*'
-    <END_CMNT> -> '*''/'
-
+    ohne "":  "/*" ([^*] | *+[^*/])* "*/"
+    mit  "": "/*" ( ([^*]| "\"" [^\"]* "\""]) | *+ ([^*/]|"[")* "*/"
 Aufgabe 2.3: (Endliche Automaten)
 
-  a) (aa|bb)*((ab|ba)(aa|bb)*(ab|ba)(aa|bb)*)* [siehe A2.1.a]
-     Startzustand != s_1 ==> Automat akzeptiert alle Wörter mit einer ungerade Anzahl von as und bs
+  a) (aa|bb)*((ab|ba)(aa|bb)*(ab|ba)(aa|bb)*)* [siehe A2.1.c]
+     Startzustand:
+     s_2 ==> Ungerade Anzahl as gerade Anzahl bs
+     s_3 ==> Ungerade Anzahl as / bs
+     s_4 ==> Gerade Anzahl as ungerade Anzahl bs
 
   b)
-    (0|(1(01*0)*1))*
+    (0|1(01*0)*1)*
 
 Aufgabe 2.4: (Thompson-Konstruktion) [siehe Aufgabe_2_4.svg]
 
@@ -40,10 +39,11 @@ Aufgabe 2.5: (Alternative Konstruktion des NEA)
   Iterator muss 2 Kriterien erfüllen:
     i) Der Automat N(s) kann 0-mal durchlaufen werden
     ii) Der Auomat N(s) muss einen eps-Übergang vom Endzustand in den Anfangszustand haben
+    iii) Dar nicht mehr erkennen als  (L(N(s)))*
 
-  a) korrekt, da i) und ii) erfüllt sind
-  b) korrekt, da i) und ii) erfüllt sind
-  c) korrekt, da i) und ii) erfüllt sind
+  a) nicht korrekt, da iii) nicht efüllt ist. Der Automat für (ab*)* erkennt auch b*.
+  b) nicht korrekt, iii) nicht erfüllt. Der Automat für (ab*)* erkennt auch b*.
+  c) nicht korrekt, iii) nicht erfüllt. Der Automat für (a*b)* erkennt auch a*.
 
 Aufgabe 2.6: (Teilmengenkonstruktion)
 
