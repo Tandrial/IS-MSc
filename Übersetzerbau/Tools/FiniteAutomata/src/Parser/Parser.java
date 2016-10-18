@@ -21,39 +21,43 @@ public class Parser implements ParserConstants {
 
 	/******************************************************************************/
 	/* SYNTACTICAL SPECIFICATION */
+	/*                                                                            */
+	/* <RegEx> ::= <Term> ( <ALTERNATIVE> <RegEx> )* */
+	/* <Term> ::= ( <Factor> )+ */
+	/* <Factor> ::= <Base> ( <ITERATION> )* */
+	/* <Base> ::= <LPARAN> <RegEx> <RPARAN> | <LITERAL> */
+	/*                                                                            */
 	/******************************************************************************/
-
-	// <RegEx> ::= <Term> | <Term> <ALTERNATIVE> <RegEx>
 	final public Expression parseRegEx() throws ParseException {
 		Expression t1 = null;
 		Expression t2 = null;
 		t1 = parseTerm();
-		switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
-		case ALTERNATIVE: {
+		label_1: while (true) {
+			switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
+			case ALTERNATIVE: {
+				;
+				break;
+			}
+			default:
+				jj_la1[0] = jj_gen;
+				break label_1;
+			}
 			jj_consume_token(ALTERNATIVE);
 			t2 = parseTerm();
-			break;
+			t1 = new Alternative(t1, t2);
 		}
-		default:
-			jj_la1[0] = jj_gen;
-			;
-		}
-		if (t2 == null) {
+		{
 			if ("" != null)
 				return t1;
-		} else {
-			if ("" != null)
-				return new Alternative(t1, t2);
 		}
 		throw new Error("Missing return statement in function");
 	}
 
-	// <Term> ::= ( <Factor> )+
 	final public Expression parseTerm() throws ParseException {
 		Expression t1 = null;
 		Expression t2 = null;
 		t1 = parseFactor();
-		label_1: while (true) {
+		label_2: while (true) {
 			switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
 			case LPARAN:
 			case LITERAL: {
@@ -62,7 +66,7 @@ public class Parser implements ParserConstants {
 			}
 			default:
 				jj_la1[1] = jj_gen;
-				break label_1;
+				break label_2;
 			}
 			t2 = parseFactor();
 			t1 = new Concat(t1, t2);
@@ -74,12 +78,11 @@ public class Parser implements ParserConstants {
 		throw new Error("Missing return statement in function");
 	}
 
-	// <Factor> ::= <Base> ( <ITERATION> )*
 	final public Expression parseFactor() throws ParseException {
 		Expression t1 = null;
 		Expression t2 = null;
 		t1 = parseBase();
-		label_2: while (true) {
+		label_3: while (true) {
 			switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
 			case ITERATION: {
 				;
@@ -87,7 +90,7 @@ public class Parser implements ParserConstants {
 			}
 			default:
 				jj_la1[2] = jj_gen;
-				break label_2;
+				break label_3;
 			}
 			jj_consume_token(ITERATION);
 			t1 = new Iteration(t1);
@@ -99,7 +102,6 @@ public class Parser implements ParserConstants {
 		throw new Error("Missing return statement in function");
 	}
 
-	// <Base> ::= <LPARAN> <RegEx> <RPARAN> | <LITERAL>
 	final public Expression parseBase() throws ParseException {
 		Token lit = null;
 		Expression t1 = null;

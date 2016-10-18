@@ -28,41 +28,39 @@ PARSER_END(Parser)
 TOKEN : {
           <ITERATION : "*"> | <ALTERNATIVE : "|">
         | <LPARAN    : "("> | <RPARAN      : ")">
-        | <LITERAL   : ("\u03b5" | ["a"-"z"] | ["A"-"Z"])>
+        | <LITERAL : ("\u03b5" | ["a"-"z"] | ["A"-"Z"])>
 }
 
 SKIP : { < " " | "\t" |"\n" | "\r"> }
 
 /******************************************************************************/
 /* SYNTACTICAL SPECIFICATION                                                  */
+/*                                                                            */
+/* <RegEx>  ::= <Term> ( <ALTERNATIVE> <RegEx> )*                             */
+/* <Term>   ::= ( <Factor> )+                                                 */
+/* <Factor> ::= <Base> ( <ITERATION> )*                                       */
+/* <Base>   ::= <LPARAN> <RegEx> <RPARAN> | <LITERAL>                         */
+/*                                                                            */
 /******************************************************************************/
 
-// <RegEx> ::= <Term> | <Term> <ALTERNATIVE> <RegEx>
-  Expression parseRegEx() : { Expression t1 = null; Expression t2 = null; }
-    {
-      t1 = parseTerm() ( <ALTERNATIVE> t2 = parseTerm() )?
-      { if (t2 == null)
-          return t1;
-        else
-          return new Alternative(t1,t2);
-      }
-    }
+Expression parseRegEx() : { Expression t1 = null; Expression t2 = null; }
+{
+  t1 = parseTerm() ( <ALTERNATIVE> t2 = parseTerm() { t1 = new Alternative(t1, t2); } )*
+  { return t1; }
+}
 
-// <Term> ::= ( <Factor> )+
-  Expression parseTerm() : { Expression t1 = null; Expression t2 = null; }
-    {
-      t1 = parseFactor() (t2 = parseFactor() { t1 = new Concat(t1, t2);} )* { return t1; }
-    }
+Expression parseTerm() : { Expression t1 = null; Expression t2 = null; }
+{
+  t1 = parseFactor() ( t2 = parseFactor() { t1 = new Concat(t1, t2);} )* { return t1; }
+}
 
-// <Factor> ::= <Base> ( <ITERATION> )*
-  Expression parseFactor() : { Expression t1 = null; Expression t2 = null; }
-    {
-      t1 = parseBase() ( <ITERATION> { t1 = new Iteration(t1); } )*  { return t1; }
-    }
+Expression parseFactor() : { Expression t1 = null; Expression t2 = null; }
+{
+  t1 = parseBase() ( <ITERATION> { t1 = new Iteration(t1); } )*  { return t1; }
+}
 
-// <Base> ::= <LPARAN> <RegEx> <RPARAN> | <LITERAL>
-  Expression parseBase() : {Token lit = null; Expression t1 = null; }
-    {
-       <LPARAN> t1 = parseRegEx() <RPARAN> { return t1; }
-     | lit = <LITERAL>                     { return new Literal(lit.image.charAt(0)); }
-    }
+Expression parseBase() : {Token lit = null; Expression t1 = null; }
+{
+   <LPARAN> t1 = parseRegEx() <RPARAN> { return t1; }
+ | lit = <LITERAL>                     { return new Literal(lit.image.charAt(0)); }
+}
