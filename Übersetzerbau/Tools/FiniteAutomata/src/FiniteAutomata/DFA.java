@@ -17,7 +17,7 @@ public class DFA extends FiniteAutomata {
     Set<State> s = new HashSet<>();
     s.add(this.states.getStartState());
     for (char c : word.toCharArray()) {
-      s = move(s, c);
+      s = move(s, String.valueOf(c));
       if (s.isEmpty())
         break;
     }
@@ -33,12 +33,11 @@ public class DFA extends FiniteAutomata {
     logger.append("[*] Groups built\n");
     logger.append("[*] Building DFA_min\n");
     DFA dfa_min = new DFA();
-    dfa_min.alphabet = new HashSet<>(this.alphabet);
+    dfa_min.addToAlphabet(this.alphabet);
 
     logger.append("[*] Creating S_min\n");
-    dfa_min.states = new StateCollection();
     for (Set<State> gruppe : gruppen)
-      dfa_min.states.add(State.mergeStates(gruppe));
+      dfa_min.addState(State.mergeStates(gruppe));
 
     logger.append("[*] Creating δ_min\n");
     dfa_min.lambda = createLambda(dfa_min.states);
@@ -68,11 +67,15 @@ public class DFA extends FiniteAutomata {
       List<Set<State>> gruppenNeu = new ArrayList<>();
       groupWasSplit = false;
       for (Set<State> gruppe : gruppen) {
+        if (gruppe.size() == 1) {
+          gruppenNeu.add(gruppe);
+          continue;
+        }
         Set<State> alt = new HashSet<>(gruppe);
         Set<State> neu = new HashSet<>();
 
         boolean groupNeedstoBeSplit = false;
-        for (char c : this.alphabet) {
+        for (String c : this.alphabet) {
           Set<Set<State>> allGoals = new HashSet<>();
 
           for (State s : gruppe) {
@@ -94,11 +97,9 @@ public class DFA extends FiniteAutomata {
         if (groupNeedstoBeSplit) {
           logger.append(" into " + alt + " and " + neu + "\n");
           groupWasSplit = true;
-          gruppenNeu.add(alt);
           gruppenNeu.add(neu);
-        } else {
-          gruppenNeu.add(alt);
         }
+        gruppenNeu.add(alt);
       }
       logger.append('\n');
       gruppen = gruppenNeu;
@@ -111,7 +112,7 @@ public class DFA extends FiniteAutomata {
     TransitionTable result = new TransitionTable();
     for (State s : states) {
       State start = s.getIncludedStates().iterator().next();
-      for (char c : this.alphabet) {
+      for (String c : this.alphabet) {
         State goal = findStateWithIncludedState(lambda.getGoalFromTransition(start, c), states);
         if (goal != null)
           result.addTransition(new Transition(s, c, goal.asSet()));
@@ -120,7 +121,7 @@ public class DFA extends FiniteAutomata {
     return result;
   }
 
-  private Set<State> getGroupWhichIncludes(State state, char c, List<Set<State>> gruppen) {
+  private Set<State> getGroupWhichIncludes(State state, String c, List<Set<State>> gruppen) {
     Set<State> result = null;
     state = lambda.getGoalFromTransition(state, c);
     for (Set<State> gruppe : gruppen) {

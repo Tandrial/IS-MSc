@@ -5,15 +5,15 @@ import FiniteAutomata.State;
 
 public class Literal implements Expression {
 
-  char c;
+  String c;
 
-  public Literal(char c) {
-    this.c = c;
+  public Literal(String s) {
+    this.c = s;
   }
 
   @Override
   public String toString() {
-    return String.valueOf(c);
+    return c;
   }
 
   @Override

@@ -60,6 +60,15 @@ public class ParserTokenManager implements ParserConstants {
         do {
           switch (jjstateSet[--i]) {
           case 0:
+            if ((0x3ff000000000000L & l) != 0L) {
+              if (kind > 5)
+                kind = 5;
+            } else if ((0x100002600L & l) != 0L) {
+              if (kind > 6)
+                kind = 6;
+            }
+            break;
+          case 1:
             if ((0x100002600L & l) != 0L)
               kind = 6;
             break;

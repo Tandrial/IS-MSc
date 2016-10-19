@@ -7,23 +7,23 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class Transition {
-  private State                        state;
-  protected Map<Character, Set<State>> moves = new HashMap<>();
+  private State                     state;
+  protected Map<String, Set<State>> moves = new HashMap<>();
 
   public State getState() {
     return state;
   }
 
-  Transition(State state, char c, Set<State> states) {
+  Transition(State state, String c, Set<State> states) {
     this.state = state;
-    if (!moves.containsKey(Character.valueOf(c))) {
-      moves.put(Character.valueOf(c), states);
+    if (!moves.containsKey(c)) {
+      moves.put(c, states);
     } else {
-      moves.get(Character.valueOf(c)).addAll(states);
+      moves.get(c).addAll(states);
     }
   }
 
-  public void addMove(char c, Set<State> states) {
+  public void addMove(String c, Set<State> states) {
     if (!moves.containsKey(c))
       moves.put(c, states);
     else
@@ -31,7 +31,7 @@ public class Transition {
   }
 
   public void addTransition(Transition t) {
-    for (Entry<Character, Set<State>> entry : t.moves.entrySet()) {
+    for (Entry<String, Set<State>> entry : t.moves.entrySet()) {
       if (!moves.containsKey(entry.getKey())) {
         moves.put(entry.getKey(), entry.getValue());
       } else {
@@ -43,8 +43,8 @@ public class Transition {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    for (Entry<Character, Set<State>> move : moves.entrySet())
-      sb.append(String.format("[%s] x '%c' → %s\t", state, move.getKey(), Arrays.toString(move.getValue().toArray())));    
+    for (Entry<String, Set<State>> move : moves.entrySet())
+      sb.append(String.format("[%s] x '%s' → %s\t", state, move.getKey(), Arrays.toString(move.getValue().toArray())));
     return sb.toString().trim();
   }
 }

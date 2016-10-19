@@ -38,6 +38,7 @@ TOKEN :
       "\u03b5"
     | [ "a"-"z" ]
     | [ "A"-"Z" ]
+    | [ "0"-"9" ]
     ) >
 }
 
@@ -124,6 +125,6 @@ Expression parseBase() :
   }
 | lit = < LITERAL >
   {
-    return new Literal(lit.image.charAt(0));
+    return new Literal(lit.image);
   }
 }

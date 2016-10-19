@@ -19,14 +19,14 @@ public class TransitionTable {
     }
   }
 
-  protected Map<Character, Set<State>> getPossibleTransitions(State state) {
+  protected Map<String, Set<State>> getPossibleTransitions(State state) {
     if (table.containsKey(state))
       return table.get(state).moves;
     else
       return new HashMap<>();
   }
 
-  protected State getGoalFromTransition(State start, char c) {
+  protected State getGoalFromTransition(State start, String c) {
     return getPossibleTransitions(start).get(c).iterator().next();
   }
 

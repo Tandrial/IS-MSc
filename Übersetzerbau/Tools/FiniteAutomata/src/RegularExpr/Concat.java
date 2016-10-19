@@ -44,8 +44,8 @@ public class Concat implements Expression {
       result.addStates(n.getStates());
 
       for (State state : n.getStates()) {
-        Map<Character, Set<State>> bla = n.getPossibleTransitions(state);
-        for (Entry<Character, Set<State>> entry : bla.entrySet()) {
+        Map<String, Set<State>> bla = n.getPossibleTransitions(state);
+        for (Entry<String, Set<State>> entry : bla.entrySet()) {
           result.addTransition(state, entry.getKey(), entry.getValue());
         }
       }

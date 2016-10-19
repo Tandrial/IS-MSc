@@ -112,7 +112,7 @@ public class Parser implements ParserConstants {
     case LITERAL:
       lit = jj_consume_token(LITERAL); {
       if (true)
-        return new Literal(lit.image.charAt(0));
+        return new Literal(lit.image);
     }
       break;
     default:

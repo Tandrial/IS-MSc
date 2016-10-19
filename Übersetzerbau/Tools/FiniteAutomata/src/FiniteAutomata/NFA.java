@@ -3,12 +3,11 @@ package FiniteAutomata;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Set;
 
 public class NFA extends FiniteAutomata {
 
-  public static final char eps = 'ε';
+  public static final String eps = "\u03b5";
 
   @Override
   public String toString() {
@@ -20,7 +19,7 @@ public class NFA extends FiniteAutomata {
     Set<State> s = epsilonClosure(states.getStartState().asSet());
 
     for (char c : word.toCharArray()) {
-      s = epsilonClosure(move(s, c));
+      s = epsilonClosure(move(s, String.valueOf(c)));
       if (s.isEmpty())
         break;
     }
@@ -67,12 +66,12 @@ public class NFA extends FiniteAutomata {
       logger.append("[*] Checking [" + currentState + "]\n");
 
       // for (jedes Eingabesymbol a ∈ Σ) {
-      for (char c : dfa.alphabet) {
+      for (String c : dfa.alphabet) {
         // T := move(T, a)
         Set<State> T = new HashSet<>();
         for (State s : currentState.getIncludedStates())
           T.addAll(move(s.asSet(), c));
-        logger.append(String.format("\tT:= move([%s], '%c') = %s", currentState, c, T));
+        logger.append(String.format("\tT:= move([%s], '%s') = %s", currentState, c, T));
 
         // U := ε-closure(T);
         Set<State> closureResult = epsilonClosure(T);

@@ -1,12 +1,21 @@
-package Parser;
-
-import static org.junit.Assert.assertEquals;
-
 import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
 
-public class ParserTests {
+import Parser.ParseException;
+import Parser.Parser;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+public class ParserTest extends TestCase {
+
+  public ParserTest(String testName) {
+    super(testName);
+  }
+
+  public static TestSuite suite() {
+    return new TestSuite(ParserTest.class);
+  }
 
   @Test
   public void testSimple() throws UnsupportedEncodingException, ParseException {
@@ -46,7 +55,7 @@ public class ParserTests {
 
   @Test
   public void testComplex() throws UnsupportedEncodingException, ParseException {
-    String[] testsSimple = { "((a|ε)b*)*", "(a|b)*abb(a|b)*" };
+    String[] testsSimple = { "(a|b)*", "((a|ε)b*)*", "(a|b)*abb(a|b)*", "(a|b)*a(a|b)(a|b)" };
     for (String s : testsSimple) {
       String result = Parser.parse(s).toString();
       assertEquals(s + " but was " + result, s, result);
