@@ -1,5 +1,6 @@
 package de.mkrane.finiteAutomataTools.regularExpr;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -7,7 +8,7 @@ import java.util.Set;
 import de.mkrane.finiteAutomataTools.finiteAutomata.NFA;
 import de.mkrane.finiteAutomataTools.finiteAutomata.State;
 
-public class Alternative implements Expression {
+public class Alternative extends Expression {
 
   Expression t1;
   Expression t2;
@@ -61,10 +62,42 @@ public class Alternative implements Expression {
       }
     }
 
-    result.renameStates("");
+    result.renameStates();
 
     if (debugOutput)
       printDebug(result);
     return result;
+  }
+
+  @Override
+  public Set<String> getAlphabet() {
+    Set<String> result = new HashSet<>(t1.getAlphabet());
+    result.addAll(t2.getAlphabet());
+    return result;
+  }
+
+  @Override
+  public boolean isNullable() {
+    return t1.isNullable() || t2.isNullable();
+  }
+
+  @Override
+  public Set<Integer> getFirstPos() {
+    if (firstPos != null)
+      return firstPos;
+    firstPos = new HashSet<>(t1.getFirstPos());
+    firstPos.addAll(t2.getFirstPos());
+    return firstPos;
+  }
+
+  @Override
+  public Set<Integer> getLastPos() {
+    return getFirstPos();
+  }
+
+  @Override
+  protected void setId() {
+    t1.setId();
+    t2.setId();
   }
 }

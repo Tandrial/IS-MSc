@@ -6,14 +6,14 @@ import java.util.Set;
 public class StateCollection extends HashSet<State> {
   private static final long serialVersionUID = 1L;
 
-  protected StateCollection() {
+  public StateCollection() {
   }
 
   protected StateCollection(Set<State> states) {
     super(states);
   }
 
-  protected void resetMarked() {
+  public void resetMarked() {
     for (State s : this)
       s.setMarked(false);
   }
@@ -42,6 +42,16 @@ public class StateCollection extends HashSet<State> {
     State result = null;
     for (State s : this)
       if (s.getName().equals(state)) {
+        result = s;
+        break;
+      }
+    return result;
+  }
+
+  public State getStateByIds(Set<Integer> ids) {
+    State result = null;
+    for (State s : this)
+      if (s.getIncludedIds().equals(ids)) {
         result = s;
         break;
       }

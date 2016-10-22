@@ -5,20 +5,38 @@ import java.util.Set;
 
 public class State {
 
-  public static State mergeStates(Set<State> states) {
+  public static <T> State mergeStates(Set<T> states) {
     StringBuilder sb = new StringBuilder();
     boolean neuIsStart = false;
     boolean neuIsFinal = false;
     Set<State> includedStates = new HashSet<>();
-    for (State state : states) {
-      if (state.isInitial())
-        neuIsStart = true;
-      if (state.isFinal())
-        neuIsFinal = true;
-      sb.append(state);
-      includedStates.add(state);
+    Set<Integer> includedIds = new HashSet<>();
+    for (T o : states) {
+      if (o instanceof State) {
+        State state = (State) o;
+        if (state.isInitial())
+          neuIsStart = true;
+        if (state.isFinal())
+          neuIsFinal = true;
+        sb.append(state);
+        includedStates.add(state);
+      } else if (o instanceof Integer) {
+        Integer id = (Integer) o;
+        includedIds.add(id);
+        sb.append(id);
+      }
     }
-    State neu = new State(sb.toString(), neuIsStart, neuIsFinal, includedStates);
+
+    State neu;
+    if (includedStates.size() > 0)
+      neu = new State(sb.toString(), neuIsStart, neuIsFinal, includedStates);
+    else
+      neu = new State(sb.toString(), includedIds);
+    return neu;
+  }
+
+  public static State fromPosSet(Set<Integer> firstPos) {
+    State neu = new State(firstPos.toString());
     return neu;
   }
 
@@ -30,25 +48,31 @@ public class State {
     return sb.toString();
   }
 
-  private static long nextID = 0;
+  private static long nextID = 1;
 
   private static long getNextID() {
     return nextID++;
   }
 
-  private String     name;
-  private long       id;
-  private boolean    isInitial      = false;
-  private boolean    isFinal        = false;
-  private boolean    marked         = false;
+  private String       name;
+  private long         id;
+  private boolean      isInitial      = false;
+  private boolean      isFinal        = false;
+  private boolean      marked         = false;
 
-  private Set<State> includedStates = new HashSet<>();
+  private Set<State>   includedStates = new HashSet<>();
+  private Set<Integer> includedIds    = new HashSet<>();
 
   public State(String name, boolean isInitial, boolean isFinal, Set<State> includedStates) {
     this(name);
     this.isInitial = isInitial;
     this.isFinal = isFinal;
-    this.includedStates = includedStates;
+    this.includedStates.addAll(includedStates);
+  }
+
+  public State(String name, Set<Integer> includedIds) {
+    this(name);
+    this.includedIds = includedIds;
   }
 
   public State(String name) {
@@ -88,8 +112,16 @@ public class State {
     this.name = name;
   }
 
+  public long getId() {
+    return id;
+  }
+
   public Set<State> getIncludedStates() {
     return includedStates;
+  }
+
+  public Set<Integer> getIncludedIds() {
+    return includedIds;
   }
 
   public Set<State> asSet() {

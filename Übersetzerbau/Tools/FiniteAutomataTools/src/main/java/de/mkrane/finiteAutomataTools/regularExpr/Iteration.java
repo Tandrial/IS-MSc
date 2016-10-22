@@ -1,11 +1,12 @@
 package de.mkrane.finiteAutomataTools.regularExpr;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import de.mkrane.finiteAutomataTools.finiteAutomata.NFA;
 import de.mkrane.finiteAutomataTools.finiteAutomata.State;
 
-public class Iteration implements Expression {
+public class Iteration extends Expression {
 
   Expression t1;
 
@@ -46,10 +47,38 @@ public class Iteration implements Expression {
     result.addTransition(neuStart, NFA.eps, neuFinal.asSet());
     result.addTransition(neuStart, NFA.eps, oldStart.asSet());
 
-    result.renameStates("");
+    result.renameStates();
 
     if (debugOutput)
       printDebug(result);
     return result;
+  }
+
+  @Override
+  public Set<String> getAlphabet() {
+    return new HashSet<>(t1.getAlphabet());
+  }
+
+  @Override
+  public boolean isNullable() {
+    return true;
+  }
+
+  @Override
+  public Set<Integer> getFirstPos() {
+    if (firstPos != null)
+      return firstPos;
+    firstPos = t1.getFirstPos();
+    return firstPos;
+  }
+
+  @Override
+  public Set<Integer> getLastPos() {
+    return getFirstPos();
+  }
+
+  @Override
+  protected void setId() {
+    t1.setId();
   }
 }

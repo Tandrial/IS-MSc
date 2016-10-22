@@ -14,7 +14,7 @@ public class Transition {
     return state;
   }
 
-  Transition(State state, String c, Set<State> states) {
+  public Transition(State state, String c, Set<State> states) {
     this.state = state;
     if (!moves.containsKey(c)) {
       moves.put(c, states);

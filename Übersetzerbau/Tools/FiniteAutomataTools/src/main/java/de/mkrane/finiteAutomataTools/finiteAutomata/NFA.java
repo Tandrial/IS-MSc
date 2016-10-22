@@ -9,6 +9,8 @@ public class NFA extends FiniteAutomata {
 
   public static final String eps = "\u03b5";
 
+  private DFA                dfa = null;
+
   @Override
   public String toString() {
     return "NFA = " + super.toString();
@@ -16,7 +18,7 @@ public class NFA extends FiniteAutomata {
 
   @Override
   public boolean simulate(String word) {
-    Set<State> s = epsilonClosure(states.getStartState().asSet());
+    Set<State> s = epsilonClosure(getStates().getStartState().asSet());
 
     for (char c : word.toCharArray()) {
       s = epsilonClosure(move(s, String.valueOf(c)));
@@ -43,21 +45,22 @@ public class NFA extends FiniteAutomata {
     return closure;
   }
 
-  public DFA convertToDFA(boolean debugOutput) {
-    logger = new StringBuilder();
-    DFA dfa = new DFA();
+  public DFA convertToDFA() {
+    if (dfa != null)
+      return dfa;
+    dfa = new DFA();
     dfa.addToAlphabet(this.alphabet);
     dfa.alphabet.remove(NFA.eps);
 
     // Initialisiere SD mit unmarkiertem Zustand ε-closure({s0});
     StateCollection S_D = new StateCollection();
-    State start = State.mergeStates(epsilonClosure(states.getStartState().asSet()));
+    State start = State.mergeStates(epsilonClosure(getStates().getStartState().asSet()));
     S_D.add(start);
     logger.append("[*] Initial S_D = " + S_D + '\n');
 
     Deque<State> queue = new ArrayDeque<>();
     queue.add(start);
-    this.states.resetMarked();
+    this.getStates().resetMarked();
 
     // while (es gibt einen unmarkierten Zustand T ∈ SD) {
     while (!queue.isEmpty()) {
@@ -91,14 +94,12 @@ public class NFA extends FiniteAutomata {
       }
     }
     logger.append("[*] States and Lambda done\n");
-    dfa.states = S_D;
+    dfa.addStates(S_D);
 
     logger.append("[*] Renaming States\n");
-    dfa.renameStates("");
+    dfa.renameStates();
 
     logger.append("[*] Done\n");
-    if (debugOutput)
-      System.out.println(logger.toString());
     return dfa;
   }
 }

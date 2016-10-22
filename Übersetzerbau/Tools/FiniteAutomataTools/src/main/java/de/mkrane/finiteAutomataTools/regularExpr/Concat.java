@@ -1,5 +1,6 @@
 package de.mkrane.finiteAutomataTools.regularExpr;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -7,7 +8,7 @@ import java.util.Set;
 import de.mkrane.finiteAutomataTools.finiteAutomata.NFA;
 import de.mkrane.finiteAutomataTools.finiteAutomata.State;
 
-public class Concat implements Expression {
+public class Concat extends Expression {
 
   Expression t1;
   Expression t2;
@@ -60,10 +61,48 @@ public class Concat implements Expression {
       result.addTransition(s, NFA.eps, n2OldStart.asSet());
     }
 
-    result.renameStates("");
+    result.renameStates();
 
     if (debugOutput)
       printDebug(result);
     return result;
+  }
+
+  @Override
+  public Set<String> getAlphabet() {
+    Set<String> result = new HashSet<>(t1.getAlphabet());
+    result.addAll(t2.getAlphabet());
+    return result;
+  }
+
+  @Override
+  public boolean isNullable() {
+    return t1.isNullable() && t2.isNullable();
+  }
+
+  @Override
+  public Set<Integer> getFirstPos() {
+    if (firstPos != null)
+      return firstPos;
+    firstPos = new HashSet<>(t1.getFirstPos());
+    if (t1.isNullable())
+      firstPos.addAll(t2.getFirstPos());
+    return firstPos;
+  }
+
+  @Override
+  public Set<Integer> getLastPos() {
+    if (lastPos != null)
+      return lastPos;
+    lastPos = new HashSet<>(t2.getFirstPos());
+    if (t2.isNullable())
+      lastPos.addAll(t1.getFirstPos());
+    return lastPos;
+  }
+
+  @Override
+  protected void setId() {
+    t1.setId();
+    t2.setId();
   }
 }
