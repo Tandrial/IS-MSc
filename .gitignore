@@ -1,7 +1,7 @@
 # Created by https://www.gitignore.io/api/haskell,java,c,c++,eclipse
 
 ### USB Tools ###
-
+*.jar
 !Übersetzerbau/Tools/*.jar
 
 ### Haskell ###
@@ -153,7 +153,7 @@ local.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
+
 *.war
 *.ear
 
