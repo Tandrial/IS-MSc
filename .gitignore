@@ -1,5 +1,9 @@
 # Created by https://www.gitignore.io/api/haskell,java,c,c++,eclipse
 
+### USB Tools ###
+
+!Übersetzerbau/Tools/*.jar
+
 ### Haskell ###
 dist
 dist-*
