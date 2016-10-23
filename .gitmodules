@@ -1,0 +1,3 @@
+[submodule "Übersetzerbau/Tools/FiniteAutomataTools"]
+	path = Übersetzerbau/Tools/FiniteAutomataTools
+	url = git@github.com:Tandrial/FiniteAutomataTools.git
