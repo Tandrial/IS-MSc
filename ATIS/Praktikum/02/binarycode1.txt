@@ -1,0 +1,39 @@
+; Lab 2
+
+0x100030d1: 55             		push	ebp
+0x100030d2: 8bec           		mov 	ebp, esp
+0x100030d4: 51             		push	ecx
+0x100030d5: 53             		push	ebx
+0x100030d6: 8b5d0c         		mov 	ebx, dword ptr [ebp + 0xc]
+0x100030d9: 56             		push	esi
+0x100030da: 8d4301         		lea 	eax, dword ptr [ebx + 1]
+0x100030dd: 50             		push	eax
+0x100030de: e8590e0000     		call	0x10003f3c
+0x100030e3: 8bf0           		mov 	esi, eax
+0x100030e5: 33c0           		xor 	eax, eax
+0x100030e7: 89450c         		mov 	dword ptr [ebp + 0xc], eax
+0x100030ea: 59             		pop 	ecx
+0x100030eb: 85db           		test	ebx, ebx
+0x100030ed: 7e2c           		jle 	0x1000311b
+0x100030ef: 57             		push	edi
+0x100030f0: 8b7d08         		mov 	edi, dword ptr [ebp + 8]
+0x100030f3: 2bfe           		sub 	edi, esi
+0x100030f5: 8d0c30         		lea 	ecx, dword ptr [eax + esi]
+0x100030f8: c745fc0e000000 		mov 	dword ptr [ebp - 4], 0xe
+0x100030ff: 33d2           		xor 	edx, edx
+0x10003101: f775fc         		div 	dword ptr [ebp - 4]
+0x10003104: 8a82b4710010   		mov 	al, byte ptr [edx + 0x100071b4]
+0x1000310a: 32040f         		xor 	al, byte ptr [edi + ecx]
+0x1000310d: 8801           		mov 	byte ptr [ecx], al
+0x1000310f: 8b450c         		mov 	eax, dword ptr [ebp + 0xc]
+0x10003112: 40             		inc 	eax
+0x10003113: 89450c         		mov 	dword ptr [ebp + 0xc], eax
+0x10003116: 3bc3           		cmp 	eax, ebx
+0x10003118: 7cdb           		jl  	0x100030f5
+0x1000311a: 5f             		pop 	edi
+0x1000311b: 8bc6           		mov 	eax, esi
+0x1000311d: 5e             		pop 	esi
+0x1000311e: 5b             		pop 	ebx
+0x1000311f: 8be5           		mov 	esp, ebp
+0x10003121: 5d             		pop 	ebp
+0x10003122: c3             		ret

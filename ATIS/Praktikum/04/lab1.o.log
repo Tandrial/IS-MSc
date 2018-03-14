@@ -1,0 +1,117 @@
+[+] creating Disassembly
+ Offset     : 0x0
+ Entrypoint : 0x4d
+done.
+
+[+] creating leaders
+  0x0: push ebx
+  0xa: test eax, 1
+  0x11: add ebx, eax
+  0x14: inc eax
+  0x1a: mov eax, ebx
+  0x1e: push ebx
+  0x2b: add ebx, eax
+  0x32: mov eax, ebx
+  0x36: push ebx
+  0x43: push ebx
+  0x4d: push ebp
+done.
+
+[+] creating blocks
+done.
+
+[+] creating links
+done.
+
+[+] dumping CFG
+bb1 at 0x0
+    push ebx
+    mov ecx, 0x64
+    xor ebx, ebx
+    xor eax, eax
+
+bb2 at 0xa
+    test eax, 1
+    je 0x14
+
+bb3 at 0x11
+    add ebx, eax
+    dec ecx
+
+bb4 at 0x14
+    inc eax
+    cmp ecx, 0
+    jne 0xa
+
+bb5 at 0x1a
+    mov eax, ebx
+    pop ebx
+    ret
+
+bb6 at 0x1e
+    push ebx
+    mov ecx, 0x64
+    xor ebx, ebx
+    mov eax, 1
+
+bb7 at 0x2b
+    add ebx, eax
+    add eax, 2
+    loop 0x2b
+
+bb8 at 0x32
+    mov eax, ebx
+    pop ebx
+    ret
+
+bb9 at 0x36
+    push ebx
+    mov ebx, 0x64
+    imul ebx, ebx
+    mov eax, ebx
+    pop ebx
+    ret
+
+bb10 at 0x43
+    push ebx
+    mov ebx, 0x2710
+    mov eax, ebx
+    pop ebx
+    ret
+
+bb11 at 0x4d
+    push ebp
+    mov ebp, esp
+    call 0
+    push eax
+    push 0
+    call 0x60
+    call 0x1e
+    push eax
+    push 7
+    call 0x70
+    call 0x36
+    push eax
+    push 0xe
+    call 0x80
+    call 0x43
+    push eax
+    push 0x15
+    call 0x90
+    mov eax, 0
+    leave
+    ret
+
+bb1 -> bb2
+bb2 -> bb4
+bb2 -> bb3
+bb3 -> bb4
+bb4 -> bb2
+bb4 -> bb5
+bb6 -> bb7
+bb7 -> bb7
+bb7 -> bb8
+done.
+
+[+] Writing CFG to lab1.o.dot file
+done. https://dreampuf.github.io/GraphvizOnline/ to render!

@@ -1,0 +1,12 @@
+Lab 3
+
+Die Funktion func xor'd den in arg0 übergebenen String mit einem 14-Byte langen
+Key, welcher an der Stelle 0x100071B4 gespeichert ist.
+
+Die Ausgabe der Funktion ist: 51316a49696245416e4f704c50464c376539674c6d
+Das Byte-Array lässt sich als String interpretieren: Q1jIibEAnOpLPFL7e9gLm
+
+Eine Google Suche findet einen Analyse-Bericht für eine potentielle Malware
+[https://cape.contextis.com/analysis/3199/] wo der String als ein Name für einen
+Mutex benutzt wird. Mutexe erlaubt es Malware festzustellen, ob der PC bereits
+infestiert ist oder nicht.

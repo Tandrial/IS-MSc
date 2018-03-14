@@ -1,0 +1,129 @@
+[+] creating Disassembly
+ Offset     : 0x0
+ Entrypoint : 0x0
+
+  0x00000000: 55             		push	ebp
+  0x00000001: 8bec           		mov 	ebp, esp
+  0x00000003: 51             		push	ecx
+  0x00000004: 53             		push	ebx
+  0x00000005: 8b5d0c         		mov 	ebx, dword ptr [ebp + 0xc]
+  0x00000008: 56             		push	esi
+  0x00000009: 8d4301         		lea 	eax, dword ptr [ebx + 1]
+  0x0000000c: 50             		push	eax
+  0x0000000d: e8590e0000     		call	0xe6b
+  0x00000012: 8bf0           		mov 	esi, eax
+  0x00000014: 33c0           		xor 	eax, eax
+  0x00000016: 89450c         		mov 	dword ptr [ebp + 0xc], eax
+  0x00000019: 59             		pop 	ecx
+  0x0000001a: 85db           		test	ebx, ebx
+  0x0000001c: 7e2c           		jle 	0x4a
+  0x0000001e: 57             		push	edi
+  0x0000001f: 8b7d08         		mov 	edi, dword ptr [ebp + 8]
+  0x00000022: 2bfe           		sub 	edi, esi
+  0x00000024: 8d0c30         		lea 	ecx, dword ptr [eax + esi]
+  0x00000027: c745fc0e000000 		mov 	dword ptr [ebp - 4], 0xe
+  0x0000002e: 33d2           		xor 	edx, edx
+  0x00000030: f775fc         		div 	dword ptr [ebp - 4]
+  0x00000033: 8a82b4710010   		mov 	al, byte ptr [edx + 0x100071b4]
+  0x00000039: 32040f         		xor 	al, byte ptr [edi + ecx]
+  0x0000003c: 8801           		mov 	byte ptr [ecx], al
+  0x0000003e: 8b450c         		mov 	eax, dword ptr [ebp + 0xc]
+  0x00000041: 40             		inc 	eax
+  0x00000042: 89450c         		mov 	dword ptr [ebp + 0xc], eax
+  0x00000045: 3bc3           		cmp 	eax, ebx
+  0x00000047: 7cdb           		jl  	0x24
+  0x00000049: 5f             		pop 	edi
+  0x0000004a: 8bc6           		mov 	eax, esi
+  0x0000004c: 5e             		pop 	esi
+  0x0000004d: 5b             		pop 	ebx
+  0x0000004e: 8be5           		mov 	esp, ebp
+  0x00000050: 5d             		pop 	ebp
+  0x00000051: c3             		ret
+done.
+
+[+] creating leaders
+  0x0: push ebp
+  0x1e: push edi
+  0x24: lea ecx, dword ptr [eax + esi]
+  0x49: pop edi
+  0x4a: mov eax, esi
+done.
+
+[+] creating blocks
+  bb1 at 0x0
+  bb2 at 0x1e
+  bb3 at 0x24
+  bb4 at 0x49
+  bb5 at 0x4a
+done.
+
+[+] creating links
+done.
+
+[+] dumping CFG
+bb1 at 0x0
+    push ebp
+    mov ebp, esp
+    push ecx
+    push ebx
+    mov ebx, dword ptr [ebp + 0xc]
+    push esi
+    lea eax, dword ptr [ebx + 1]
+    push eax
+    call 0xe6b
+    mov esi, eax
+    xor eax, eax
+    mov dword ptr [ebp + 0xc], eax
+    pop ecx
+    test ebx, ebx
+    jle 0x4a
+
+bb2 at 0x1e
+    push edi
+    mov edi, dword ptr [ebp + 8]
+    sub edi, esi
+
+bb3 at 0x24
+    lea ecx, dword ptr [eax + esi]
+    mov dword ptr [ebp - 4], 0xe
+    xor edx, edx
+    div dword ptr [ebp - 4]
+    mov al, byte ptr [edx + 0x100071b4]
+    xor al, byte ptr [edi + ecx]
+    mov byte ptr [ecx], al
+    mov eax, dword ptr [ebp + 0xc]
+    inc eax
+    mov dword ptr [ebp + 0xc], eax
+    cmp eax, ebx
+    jl 0x24
+
+bb4 at 0x49
+    pop edi
+
+bb5 at 0x4a
+    mov eax, esi
+    pop esi
+    pop ebx
+    mov esp, ebp
+    pop ebp
+    ret
+
+bb1 -> bb5
+bb1 -> bb2
+bb2 -> bb3
+bb3 -> bb3
+bb3 -> bb4
+bb4 -> bb5
+done.
+
+[+] Writing CFG to binarycode1.dot file
+bb1 -> bb5
+bb1 -> bb2
+bb2 -> bb3
+bb3 -> bb3
+bb3 -> bb4
+bb4 -> bb5
+<itertools.groupby object at 0x00000000032573B8>
+<itertools._grouper object at 0x0000000003255C18>
+[[1, 2, 3, 4, 5]]
+done. https://dreampuf.github.io/GraphvizOnline/ to render!

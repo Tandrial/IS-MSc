@@ -1,0 +1,18 @@
+digraph CFG {
+  label="CFG - whileloop1_mainfunction";
+
+  labelloc=top;
+  splines=splines;
+
+  bb1 -> bb2 -> bb3 -> bb4[style=invis];
+
+  bb1[shape=box, label="bb1 at 0x0\n\npush ebp\lmov ebp, esp\lsub esp, 0x10\lmov dword ptr [ebp - 8], 0\lmov dword ptr [ebp - 4], 0\ljmp 0x20\l"];
+  bb1:e -> bb3:e;
+  bb2[shape=box, label="bb2 at 0x16\n\nmov eax, dword ptr [ebp - 8]\ladd dword ptr [ebp - 4], eax\ladd dword ptr [ebp - 8], 1\l"];
+  bb2 -> bb3;
+  bb3[shape=box, label="bb3 at 0x20\n\ncmp dword ptr [ebp - 8], 0xf\ljbe 0x16\l"];
+  bb3:w -> bb2:w[color=green];
+  bb3 -> bb4[color=red];
+  bb4[shape=box, label="bb4 at 0x26\n\nmov eax, 0\lleave\lret\l"];
+
+}

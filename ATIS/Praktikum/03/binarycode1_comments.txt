@@ -1,0 +1,61 @@
+; Lab 3
+
+arg0 = "02 38 30 35 0A 6A 63 02 74 7C 53 51 6C 7F 1F 3E 3F 45 04 44 4B" [ebp + 0x8]
+arg1 = 21                                                               [ebp + 0xc]
+mem  = "53 09 5A 7C 63 08 26 43 1A 33 23 1D 3C 39 00 00"                [0x100071b4]
+--------------------------------------------------------------------------------
+0x100030d1: 55             		push	ebp
+0x100030d2: 8bec           		mov 	ebp, esp
+0x100030d4: 51             		push	ecx
+0x100030d5: 53             		push	ebx                                   Preamble
+--------------------------------------------------------------------------------
+0x100030d6: 8b5d0c         		mov 	ebx, dword ptr [ebp + 0xc]
+0x100030d9: 56             		push	esi
+0x100030da: 8d4301         		lea 	eax, dword ptr [ebx + 1]
+0x100030dd: 50             		push	eax
+0x100030de: e8590e0000     		call	0x10003f3c
+0x100030e3: 8bf0           		mov 	esi, eax                              esi = malloc(arg1 + 1)
+--------------------------------------------------------------------------------
+0x100030e5: 33c0           		xor 	eax, eax
+0x100030e7: 89450c         		mov 	dword ptr [ebp + 0xc], eax
+0x100030ea: 59             		pop 	ecx                                   arg1 = 0 (als counter)
+--------------------------------------------------------------------------------
+0x100030eb: 85db           		test	ebx, ebx
+0x100030ed: 7e2c           		jle 	0x1000311b                            if ( ebx < 1) return esi
+--------------------------------------------------------------------------------
+0x100030ef: 57             		push	edi
+0x100030f0: 8b7d08         		mov 	edi, dword ptr [ebp + 8]              edi zeigt auf arg0
+0x100030f3: 2bfe           		sub 	edi, esi                              siehe *NOTE* unten
+  ------------------------------------------------------------------------------
+  0x100030f5: 8d0c30         		lea 	ecx, dword ptr [eax + esi]            ecx = esi + eax
+  0x100030f8: c745fc0e000000 		mov 	dword ptr [ebp - 4], 0xe
+  0x100030ff: 33d2           		xor 	edx, edx                              eax = eax / 14
+  0x10003101: f775fc         		div 	dword ptr [ebp - 4]                   Remainder ==> edx
+  0x10003104: 8a82b4710010   		mov 	al, byte ptr [edx + 0x100071b4]       al = memory[eax % 14]
+  0x1000310a: 32040f         		xor 	al, byte ptr [edi + ecx]              al ^= arg0[eax] *NOTE*
+  0x1000310d: 8801           		mov 	byte ptr [ecx], al                    esi[eax] = memory[eax % 14] ^ arg0[eax]
+  ------------------------------------------------------------------------------
+  0x1000310f: 8b450c         		mov 	eax, dword ptr [ebp + 0xc]
+  0x10003112: 40             		inc 	eax
+  0x10003113: 89450c         		mov 	dword ptr [ebp + 0xc], eax            arg1++ (counter)
+  ------------------------------------------------------------------------------
+  0x10003116: 3bc3           		cmp 	eax, ebx                              if (eax < arg1) loop
+  0x10003118: 7cdb           		jl  	0x100030f5
+  ------------------------------------------------------------------------------
+0x1000311a: 5f             		pop 	edi
+0x1000311b: 8bc6           		mov 	eax, esi                              return esi
+--------------------------------------------------------------------------------
+0x1000311d: 5e             		pop 	esi
+0x1000311e: 5b             		pop 	ebx
+0x1000311f: 8be5           		mov 	esp, ebp                              Postamble
+0x10003121: 5d             		pop 	ebp
+0x10003122: c3             		ret
+
+*NOTE*
+Rechung von lea: [edi + ecx] =(1)=> [arg0 - esi + esi + eax] = [edi + eax] =(2)=> arg0[eax]
+(1)
+  edi = arg0 - esi (@0x100030f3)
+  ecx = esi + eax (@0x100030f5)
+
+(2)
+  edi zeigt auf arg0

@@ -1,0 +1,63 @@
+Exercise 2:
+
+2.1
+a) EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI  Veränderung von ESP/EBP problematisch
+
+b) 32bit ==> 64bit, prefix ändert sich von e auf r, r8-15 kommen dazu (Menge x2)
+
+c) eip ist der Instructionpointer und zeigt auf die Instruktion die als nächstes ausgeführt wird
+
+d) Zero-Flag wird nach einer arithmetischen Operation gesetzt, falls das Ergeniss 0 war [Teil des FLAG Register  eFlags rFlags]
+
+e) RAX RRRRRRRR QWORD
+   EAX     EEEE DWORD
+    AX       XX  WORD
+  ->AH       H   BYTE
+    AL        L  BYTE
+
+2.2
+a) 2^32 - 1 = 4294967295 = ~4.3 GB, mehr mit Physical Adr Extension
+
+b) Stack wird vom Program selber verwaltet (push pop), Heap vom OS. Stack wächst gegen 0, Heap gegen hohe Addressen
+
+c) [adr] kann nicht direkt auf Stack gelegt werden also: mov eax, [adr] ; push eax / pop eax ; mov [adr], eax
+
+d) esp verändert sich um 8 byte
+
+2.3
+a) Opcode: Hex-Zahl Mnemonic: Wort das die Hex-Zahl beschreibt  Opcode 0x55 == Mnemonic push ebp
+
+b) mov eax, [adr1] ; mov [adr2], eax
+
+c) xor rax, rax  / mov rax, 0
+
+d) 0x12
+
+e) 0x1234     shr mit % [sizeRegister]
+
+f) Vergleicht Inhalt der Adr@EAX mit der Zahl 0x50545448 , Zahl als String ('PTTH') interpretiert ==> String Compare
+
+g) lea load effektive adr @[0xC012 - 0x100] = [0xBF12] nach EAX
+
+h) sub ebx, 0x100
+   mov eax, [ebx]
+i)
+  1. Move 0x402000 ==> ebp   (neuer Basepointer)
+  2. Move 0x401200 ==> esp   (neuer Stackpointer)
+  3. 0x401200 auf den Stack pushen
+  4. 0x401200 ==> esp UND  esp + 4  oder auch nicht ???
+  5. CPU tut nichts
+
+2.4
+a)
+  xor eax, eax
+  cmp ecx, 0
+  jge positiv
+  mov eax, 1
+positiv:
+
+b)call legt die Adresse ab an welche Stelle nach der Ausführung der aufgerufenen Funktion zurück gesprungen wird. Innerhalb der Funktion kann dann auf die return-Adresse zugegriffen werden und über eax zurück gegeben werden
+call mit relative addressierung   call 0x0
+
+call next
+next: pop eax

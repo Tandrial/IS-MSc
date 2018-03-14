@@ -1,0 +1,36 @@
+digraph CFG {
+  label="CFG - lab1.o";
+
+  labelloc=top;
+  splines=splines;
+
+  bb1 -> bb2 -> bb3 -> bb4 -> bb5[style=invis];
+
+  bb6 -> bb7 -> bb8[style=invis];
+
+  bb1[shape=box, label="bb1 at 0x0\n\npush ebx\lmov ecx, 0x64\lxor ebx, ebx\lxor eax, eax\l"];
+  bb1 -> bb2;
+  bb2[shape=box, label="bb2 at 0xa\n\ntest eax, 1\lje 0x14\l"];
+  bb2:e -> bb4:e[color=green];
+  bb2 -> bb3[color=red];
+  bb3[shape=box, label="bb3 at 0x11\n\nadd ebx, eax\ldec ecx\l"];
+  bb3 -> bb4;
+  bb4[shape=box, label="bb4 at 0x14\n\ninc eax\lcmp ecx, 0\ljne 0xa\l"];
+  bb4:w -> bb2:w[color=green];
+  bb4 -> bb5[color=red];
+  bb5[shape=box, label="bb5 at 0x1a\n\nmov eax, ebx\lpop ebx\lret\l"];
+
+  bb6[shape=box, label="bb6 at 0x1e\n\npush ebx\lmov ecx, 0x64\lxor ebx, ebx\lmov eax, 1\l"];
+  bb6 -> bb7;
+  bb7[shape=box, label="bb7 at 0x2b\n\nadd ebx, eax\ladd eax, 2\lloop 0x2b\l"];
+  bb7 -> bb7[color=green];
+  bb7 -> bb8[color=red];
+  bb8[shape=box, label="bb8 at 0x32\n\nmov eax, ebx\lpop ebx\lret\l"];
+
+  bb9[shape=box, label="bb9 at 0x36\n\npush ebx\lmov ebx, 0x64\limul ebx, ebx\lmov eax, ebx\lpop ebx\lret\l"];
+
+  bb10[shape=box, label="bb10 at 0x43\n\npush ebx\lmov ebx, 0x2710\lmov eax, ebx\lpop ebx\lret\l"];
+
+  bb11[shape=box, label="bb11 at 0x4d\n\npush ebp\lmov ebp, esp\lcall 0\lpush eax\lpush 0\lcall 0x60\lcall 0x1e\lpush eax\lpush 7\lcall 0x70\lcall 0x36\lpush eax\lpush 0xe\lcall 0x80\lcall 0x43\lpush eax\lpush 0x15\lcall 0x90\lmov eax, 0\lleave\lret\l"];
+
+}

@@ -1,0 +1,64 @@
+[+] creating Disassembly
+ Offset     : 0x0
+ Entrypoint : 0x0
+
+  0x00000000: 55             	push	ebp
+  0x00000001: 89e5           	mov 	ebp, esp
+  0x00000003: 83ec10         	sub 	esp, 0x10
+  0x00000006: c745f800000000 	mov 	dword ptr [ebp - 8], 0
+  0x0000000d: c745fc00000000 	mov 	dword ptr [ebp - 4], 0
+  0x00000014: eb0a           	jmp 	0x20
+  0x00000016: 8b45f8         	mov 	eax, dword ptr [ebp - 8]
+  0x00000019: 0145fc         	add 	dword ptr [ebp - 4], eax
+  0x0000001c: 8345f801       	add 	dword ptr [ebp - 8], 1
+  0x00000020: 837df80f       	cmp 	dword ptr [ebp - 8], 0xf
+  0x00000024: 76f0           	jbe 	0x16
+  0x00000026: b800000000     	mov 	eax, 0
+  0x0000002b: c9             	leave
+  0x0000002c: c3             	ret
+done.
+
+[+] creating leaders
+done.
+
+[+] creating blocks
+  bb1 at 0x0
+  bb2 at 0x16
+  bb3 at 0x20
+  bb4 at 0x26
+done.
+
+[+] creating links
+done.
+
+[+] dumping CFG
+bb1 at 0x0
+    push ebp
+    mov ebp, esp
+    sub esp, 0x10
+    mov dword ptr [ebp - 8], 0
+    mov dword ptr [ebp - 4], 0
+    jmp 0x20
+
+bb2 at 0x16
+    mov eax, dword ptr [ebp - 8]
+    add dword ptr [ebp - 4], eax
+    add dword ptr [ebp - 8], 1
+
+bb3 at 0x20
+    cmp dword ptr [ebp - 8], 0xf
+    jbe 0x16
+
+bb4 at 0x26
+    mov eax, 0
+    leave
+    ret
+
+bb1 -> bb3
+bb2 -> bb3
+bb3 -> bb2
+bb3 -> bb4
+done.
+
+[+] Writing CFG to whileloop1_mainfunction.dot file
+done. https://dreampuf.github.io/GraphvizOnline/ to render!

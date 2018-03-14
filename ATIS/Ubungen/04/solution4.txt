@@ -1,0 +1,67 @@
+Exercise 4:
+
+4.1
+a) struct Book {
+	char[20] author;
+	char[40] title;
+	char[12] ISBN;
+    uint32_t anzahl;
+  }
+
+4.2
+a) Zuordnung von Bibliothekscode erschwert, Obfuskierung kann sich auf alle Codebestandteile auswirken (inlusive libs), Obfuskierung ist aufwendiger zu analysieren wenn sie sich auf alle Codebereiche erstreckt
+b) Informationsverlust beim Kompilieren, Unterscheidung von Daten/Code, Variable size instructions / Multi-Byte instructions, Sprungziele von indirekten Sprüngen nicht immer auflösbar (jmp eax)
+c) Linear Sweep: Geht linear von einem Startpunkt durch den Code
+   Recursive Traversel: Start vom Entrypoint aus, folgt jumps/calls für weitere Startpunkte
+d)
+
+Multibyte NOP (5 byte): 0F 1F 44 00 00
+ 1F       pop ds
+ 44       inc eax
+ 00 00    add byte ptr[eax], al
+
+STROHHÄCKER, Sebastian. Malicious code: Code obfuscation.
+http://www.reverse-engineering.info/OBF/strohhaecker.pdf, 2004.
+
+0x0: 66 b8 eb 09     mov ax, 0x09eb
+0x4  66 81 fb 37 13  cmp bx, 0x1337
+0x9: 74 f7           je 0x2
+0xb: 66 e8 ff e1     call 0xe20e
+
+je 0x2 zerteilt den mov ax in:
+
+0x0: 66 b8
+0x2: eb 09           jmp 0xd
+0x4  66 81 fb 37 13  cmp bx, 0x1337
+0x9: 74 f7           je 0x2
+0xb: 66 e8 ff e1     call 0xe20e
+
+jmp 0xd zerteilt den call
+
+0x0: 66 b8
+0x2: eb 09           jmp 0xd
+0x4  66 81 fb 37 13  cmp bx, 0x1337
+0x9: 74 f7           je 0x2
+0xb: 66 e8
+0xd: ff e1           jmp ecx
+e) Daten-Type + Symbole nicht verfügbar, Kontrollfluss-Konstrukte sind nicht eindeutig aus einer Disasm rekonstruierbar
+
+4.3
+a) long strlen(const char * s);
+b) 1, pointer to string, stack @ebp+0x8
+c) 1, ebp-0x4 (counter strlen)
+
+4.4
+a) long strlen(const char * s);
+b) 1, pointer to string, stack @esp+0x4
+c) 2, eax (counter strlen), edx (baseAdr für string)
+d) Optimierung eingeschaltet(-O1), da var in reg und nicht auf stack
+
+4.5
+a) long strlen();  26
+b) 1, im Register esp
+   Addresse vom String @0x8048433 nach esp geschrieben
+   call Nebeneffekt esp -= 4
+   0x8048415 gleicht aus und lädt den String
+c) 2, eax (counter strlen), ecx (baseAdr für string)
+d) Obfuskierung(??), inc eax mittels lea

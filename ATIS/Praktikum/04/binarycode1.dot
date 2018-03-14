@@ -1,0 +1,21 @@
+digraph CFG {
+  label="CFG - binarycode1";
+
+  labelloc=top;
+  splines=splines;
+
+  bb1 -> bb2 -> bb3 -> bb4 -> bb5 [style=invis];
+
+  bb1 [shape=box, label="bb1 at 0x0\n\npush ebp\lmov ebp, esp\lpush ecx\lpush ebx\lmov ebx, dword ptr [ebp + 0xc]\lpush esi\llea eax, dword ptr [ebx + 1]\lpush eax\lcall 0xe6b\lmov esi, eax\lxor eax, eax\lmov dword ptr [ebp + 0xc], eax\lpop ecx\ltest ebx, ebx\ljle 0x4a\l"];
+  bb1:e -> bb5:e[color=green];
+  bb1 -> bb2[color=red];
+  bb2 [shape=box, label="bb2 at 0x1e\n\npush edi\lmov edi, dword ptr [ebp + 8]\lsub edi, esi\l"];
+  bb2 -> bb3;
+  bb3 [shape=box, label="bb3 at 0x24\n\nlea ecx, dword ptr [eax + esi]\lmov dword ptr [ebp - 4], 0xe\lxor edx, edx\ldiv dword ptr [ebp - 4]\lmov al, byte ptr [edx + 0x100071b4]\lxor al, byte ptr [edi + ecx]\lmov byte ptr [ecx], al\lmov eax, dword ptr [ebp + 0xc]\linc eax\lmov dword ptr [ebp + 0xc], eax\lcmp eax, ebx\ljl 0x24\l"];
+  bb3 -> bb3[color=green];
+  bb3 -> bb4[color=red];
+  bb4 [shape=box, label="bb4 at 0x49\n\npop edi\l"];
+  bb4 -> bb5;
+  bb5 [shape=box, label="bb5 at 0x4a\n\nmov eax, esi\lpop esi\lpop ebx\lmov esp, ebp\lpop ebp\lret \l"];
+
+}

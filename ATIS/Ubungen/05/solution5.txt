@@ -1,0 +1,14 @@
+Exercise 5:
+
+5.1
+a) Hardware Interrupts: auf 4 Stück begrenzt, Breakpoints auf Daten nur mit HW breakpoints möglich  Software Interrupts: beliebig viele, modifizieren auszuführenden Code, Software kann Interrupts "simulieren"
+b) Erlaubt patchen von 1-Byte Instruktionen. Breakpoint on RET, NOP, etc.
+c) INT3 wird erneut gesetzt: continue wird durch : SingleStep, reset INT3, continue ersetzt.
+
+5.2
+a) Hardware Informationen auslesen:
+    CPU-Type, GPU-Type, "Default-Netzwerkkarten", BIOS-Type
+   Check ob random-Webseite registiert ist
+     Ja -> Wahrscheinlich unter analyse (WannaCryp kill switch)
+     https://www.virusbulletin.com/blog/2017/08/wannacry-kill-switch-wasnt-inserted-make-someone-hero/
+     Nein -> Alles normal

@@ -1,0 +1,59 @@
+Exercise 3:
+
+3.1
+a) Abstraktion um unterschiedliche Mengen an RAM zu verschleiern
+   Zugriffsrechte für Speicher (RWX)
+   Jeder Prozess eigene Ansicht auf Memory
+   Keine Extra Logik nötig damit Programme sich Speicher teilen können
+
+b) naive: User space = 50% ==> 256MB / 32 MB = 8
+   tatsächlich: Beliebig viele, Processe Speicher speraierung mit CoW
+
+c) Siehe 3_1_c.png [http://support.amd.com/TechDocs/24593.pdf 5.3 Long-Mode Page Translation]
+
+  0x80ff80ee6b
+
+  4kb Pages (Max offset = 4095 ==> 2^12 Bits nötig)
+  0000000000000000 000000001 000000011 111111100 000001110 111001101011
+    Sign Extend      PML4      PDPE       PDE        PTE
+
+  16bit ungenutzt
+  9bit Page Map Level-4 Offset
+  9bit Page Directory Pointer Offset
+  9bit PAge Directory Offset
+  9bit Page Table Offset
+  12bit Physical Page Offset
+
+  Context switch durch ändern von CR3
+
+3.2
+a) Komplett Zugriff auf das System (Ring 0)
+   kann Port 0-1023 binden
+
+b)effective user id (euid) wird bei der Zugriffskontrolle überprüft, so ist es möglich mit einer anderen User ID sachen zumachen, z. B. sudo  etc.
+
+3.3
+a) Raw size  (size on disk) vs. Virtual size (size in memory)
+	Virtual size erhöhen, sodass sections a liegt dann teilweise in b
+	Heute nicht mehr möglich
+
+
+3.4
+a) 0x00028:   8 byte Section header table file offset 0x20378
+   0x0003A:   2 byte Section header table entry size 64
+   0x0003C:   2 byte Section header table entry count 27
+   0x0003E:   2 byte Section header string table index 26
+   0x20378 1728 byte Section header table (64 * 27)
+
+b) Ja, der section header wird nur zum linken benötigt. Um eine ELF-Datei auszführen ist nur der program header nötig
+
+3.5
+
+a) strace benutzt den ptrace syscall
+   "The ptrace() system call provides a means by which one process (the
+   'tracer') may observe and control the execution of another process
+   (the "tracee"), and examine and change the tracee's memory and
+   registers.  It is primarily used to implement breakpoint debugging
+   and system call tracing." (man strace)
+
+b) see minstrace.c

@@ -1,0 +1,48 @@
+; lab 4
+bb1 at 0x1000
+    push ebp
+    mov ebp, esp
+    sub esp, 0x10
+    mov dword ptr [ebp - 8], 0
+    mov dword ptr [ebp - 4], 0
+    jmp 0x1020
+
+bb2 at 0x1016
+    mov eax, dword ptr [ebp - 8]
+    add dword ptr [ebp - 4], eax
+    add dword ptr [ebp - 8], 1
+
+bb3 at 0x1020
+    cmp dword ptr [ebp - 8], 0xf
+    jbe 0x1016
+
+bb4 at 0x1026
+    mov eax, 0
+    leave
+    ret
+
+bb1 -> bb3
+bb2 -> bb3
+bb3 -> bb2
+bb3 -> bb4
+
+Graphviz code, entweder mit dot erzeugen oder online (https://dreampuf.github.io/GraphvizOnline/):
+
+digraph CFG {
+  label="CFG - whileloop1_mainfunction";
+  labelloc=top;
+  splines=splines;
+
+  bb1 -> bb2 -> bb3 -> bb4 [style=invis];
+  bb1 [shape=box,label="bb1 at 0x1000\n\npush ebp\lmov ebp, esp\lsub esp, 0x10\lmov dword ptr [ebp - 8], 0\lmov dword ptr [ebp - 4], 0\ljmp 0x1020\l"];
+  bb1:e -> bb3:e;
+
+  bb2 [shape=box,label="bb2 at 0x1016\n\nmov eax, dword ptr [ebp - 8]\ladd dword ptr [ebp - 4], eax\ladd dword ptr [ebp - 8], 1\l"];
+  bb2 -> bb3;
+
+  bb3 [shape=box,label="bb3 at 0x1020\n\ncmp dword ptr [ebp - 8], 0xf\ljbe 0x1016\l"];
+  bb3:w -> bb2:w[color=green];
+  bb3 -> bb4[color=red];
+
+  bb4 [shape=box,label="bb4 at 0x1026\n\nmov eax, 0\lleave \lret \l"];
+}
